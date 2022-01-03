@@ -1,14 +1,18 @@
+#include "raylib-cpp/include/raylib-cpp.hpp"
 #include <raylib.h>
 #include <iostream>
-#include <thread>
 #include <vector>
 #include <algorithm>
-#include "raylib-cpp/include/raylib-cpp.hpp"
 
 #include "./components/UIElement.cpp"
 #include "./components/Button.hpp"
+#include "./components/SpriteSheet.hpp"
+#include "./components/Animation.hpp"
 
 using namespace std;
+
+shared_ptr<SpriteSheet> boss;
+shared_ptr<Animation> bossAnimation;
 
 enum _scene {
     MENU = 0,
@@ -47,6 +51,15 @@ vector<shared_ptr<Button>> setPosStack(int padding, UI el, UIs... els) {
     return Q;
 }
 
+void startAnimation(raylib::Window& win) {
+    SpriteSheet boss{raylib::Image{"./resources/imgs/icon.ico"}, 4, HORIZONTAL};
+    SpriteSheet bubble{raylib::Image{"./resources/imgs/icon.ico"}, 30, VERTICAL};
+
+    Animation bossAnimation{boss, 6, {0, 0}};
+    Animation bubbleAnimation{bubble, 6, {100, 100}};
+    bossAnimation.startLoop(true);
+}
+
 void drawMenu(raylib::Window& win, int& sceneState, vector<shared_ptr<UIElement>>& drawStack) {
 	constexpr int maxButtonWidth = 100;
     raylib::Vector2 winSize = win.GetSize();
@@ -55,19 +68,16 @@ void drawMenu(raylib::Window& win, int& sceneState, vector<shared_ptr<UIElement>
     shared_ptr<Button> start = make_shared<Button>("Start", midSize, maxButtonWidth);
     start->setClick([&sceneState] () {
         sceneState = scene::GAME;
-        cout << sceneState << endl;
     });
 
     shared_ptr<Button> options = make_shared<Button>("Options", midSize, maxButtonWidth);
     options->setClick([&sceneState] () {
         sceneState = scene::OPTIONS;
-        cout << sceneState << endl;
     });
 
     shared_ptr<Button> exit = make_shared<Button>("Exit", midSize, maxButtonWidth);
     exit->setClick([&sceneState] () {
         sceneState = scene::EXIT;
-        cout << sceneState << endl;
     });
 
     auto Q = setPosStack(10, start, options, exit);
@@ -76,9 +86,14 @@ void drawMenu(raylib::Window& win, int& sceneState, vector<shared_ptr<UIElement>
         e->setFontColor(raylib::Color::DarkGreen());
         drawStack.push_back(e);
     }
+    // SpriteSheet boss{raylib::Image{"./resources/spritesheets/menu.png"}, 4, HORIZONTAL};
+
+    // shared_ptr<Animation> bossAnimation = make_shared<Animation>(boss, static_cast<unsigned int>(6), raylib::Vector2{0, 0});
+    // bossAnimation->startLoop(true);
+    // drawStack.push_back(bossAnimation);
 }
 
-void handleUI (shared_ptr<UIElement>& el, raylib::Mouse& mouseInput) {
+void handleUI(shared_ptr<UIElement>& el, raylib::Mouse& mouseInput) {
     if (mouseInput.IsButtonDown(MOUSE_LEFT_BUTTON)) {
         auto c = el->checkCollision(mouseInput.GetTouchPosition(0));
         if (c.has_value() && c.value())
@@ -87,7 +102,7 @@ void handleUI (shared_ptr<UIElement>& el, raylib::Mouse& mouseInput) {
     el->draw();
 }
 
-void gameLoop(raylib::Window& win, int& sceneState, vector<shared_ptr<UIElement>>& drawStack) {
+bool gameLoop(raylib::Window& win, int& sceneState, vector<shared_ptr<UIElement>>& drawStack) {
     win.BeginDrawing();
     win.ClearBackground(raylib::Color::DarkGray());
     
@@ -96,15 +111,25 @@ void gameLoop(raylib::Window& win, int& sceneState, vector<shared_ptr<UIElement>
             drawMenu(win, sceneState, drawStack);
             break;
         default:
-            win.Close();
-            break;
+            win.EndDrawing();
+            return false;
     }
-
+    
     raylib::Mouse mouseInput;
-    for (auto& el : drawStack)
-        thread([&mouseInput, &el] () { handleUI(el, mouseInput); }).detach();
+    for_each(
+        drawStack.begin(),
+        drawStack.end(),
+        [&mouseInput] (decltype(drawStack.front())& el) {
+            handleUI(el, mouseInput);
+        }
+    );
 
+    bossAnimation->draw();
+
+    drawStack.clear();
     win.EndDrawing();
+    
+    return true;
 }
 
 int main() {
@@ -121,8 +146,11 @@ int main() {
     w.SetIcon(icon);
     w.SetTargetFPS(60);
 
-    while (!w.ShouldClose())
-        gameLoop(w, sceneState, drawStack);
+    boss = make_shared<SpriteSheet>(raylib::Image{"./resources/spritesheets/menu.png"}, 4, HORIZONTAL);
+    bossAnimation = make_shared<Animation>(*boss, static_cast<unsigned int>(6), raylib::Vector2{0, 0});
+    bossAnimation->startLoop(true);
+
+    while (gameLoop(w, sceneState, drawStack));
     
     return 0;
 }

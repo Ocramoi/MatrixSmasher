@@ -1,18 +1,23 @@
 #include "SpriteSheet.hpp"
 
-SpriteSheet::SpriteSheet(raylib::Image _sheet, unsigned int _amntFrames, Alignment _align) {
-    sheet = _sheet;
+SpriteSheet::SpriteSheet(const raylib::Image& _sheet, unsigned int _amntFrames, Alignment _align) {
+    setSheet(_sheet);
     amntFrames = _amntFrames;
     align = _align;
 }
 
-
 raylib::Image SpriteSheet::getSheet() {
-    return sheet;
+    return *scaled;
 }
 
-void SpriteSheet::setSheet(raylib::Image _sheet) {
-    sheet = _sheet;
+Texture2D& SpriteSheet::getTexture() {
+    return texture;
+}
+
+void SpriteSheet::setSheet(const raylib::Image& _sheet) {
+    sheet = std::make_shared<raylib::Image>(_sheet);
+    scaled = std::make_shared<raylib::Image>(_sheet);
+    texture = scaled->LoadTexture();
 }
 
 unsigned int SpriteSheet::getAmntFrames() {
@@ -30,5 +35,18 @@ Alignment SpriteSheet::getAlignment() {
 void SpriteSheet::setAlignment(Alignment _align) {
     align = _align;
 }
+ 
+float SpriteSheet::getFrameWidth() {
+    return (align == HORIZONTAL) ? scaled->GetWidth() / amntFrames : scaled->GetWidth();
+}
 
+float SpriteSheet::getFrameHeight() {
+    return (align == VERTICAL) ? scaled->GetHeight() / amntFrames : scaled->GetHeight();
+}
 
+void SpriteSheet::scale(float newScale) {
+    scaled = std::make_shared<raylib::Image>(sheet->Resize(
+        newScale*sheet->GetWidth(),
+        newScale*sheet->GetHeight()
+    ));
+}
