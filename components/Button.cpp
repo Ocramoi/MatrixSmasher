@@ -46,7 +46,8 @@ void Button::setClick(const function<void()>& f) {
 }
 
 void Button::draw() {
-    boundingBox.Draw(background); boundingBox.DrawLines(border, 2);
+    boundingBox.Draw(background); 
+    boundingBox.DrawLines(border, 2);
     raylib::DrawText(formatedText, pos.x, pos.y, fontSize, fontColor);
 }
 
