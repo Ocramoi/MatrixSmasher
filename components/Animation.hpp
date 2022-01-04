@@ -40,6 +40,7 @@ class Animation : public UIElement {
         void setPosition(raylib::Vector2 v);
         string getText();
         void setText(const string& newText);
+        void setFrameSpeed(unsigned int _frameSpeed);
         optional<bool> checkCollision(const raylib::Vector2 &point);
         void click();
         void interact();

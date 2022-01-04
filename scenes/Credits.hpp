@@ -1,5 +1,5 @@
-#ifndef MENU_H_
-#define MENU_H_
+#ifndef CREDITS_H_
+#define CREDITS_H_
 
 #include "./Scene.cpp"
 
@@ -7,29 +7,29 @@
 #include <memory>
 
 #include "../components/UIElement.cpp"
-#include "../components/Button.hpp"
+#include "../components/Button.cpp"
+#include "../components/Animation.cpp"
 #include "../raylib-cpp/include/raylib-cpp.hpp"
 
-using std::make_shared;
 using std::shared_ptr;
 
-class Menu : public Scene {
+class Credits : public Scene {
 	private:
 		shared_ptr<vector<shared_ptr<UIElement>>> drawStack,
 						  drawStatic;
 		shared_ptr<raylib::Window> win;
-		vector<shared_ptr<UIElement>> buttons{};
+		pair<shared_ptr<Animation>, bool> sprite;
 		bool changeState{false};
-		scene_type sceneState;
-		// void setState()
-		void _configButtons(vector<shared_ptr<UIElement>>& buttons, const int maxButtonWidth, raylib::Vector2 startPos);
+		void _toggleScene(Credits* _c);
 	public:
-		Menu() {}
-		Menu(shared_ptr<raylib::Window>& _win,
+		Credits() {}
+		Credits(shared_ptr<raylib::Window>& _win,
 		 	shared_ptr<vector<shared_ptr<UIElement>>>& _drawStack,
 			shared_ptr<vector<shared_ptr<UIElement>>>& _drawStatic
-			);
-		vector<shared_ptr<UIElement>> getButtons();
+		);        		
+
+        void setSprite(shared_ptr<Animation>& _sprite);
+        void setSprite(shared_ptr<Animation>& _sprite, const bool shouldLoop);
 		void init();
 		void draw();
 };

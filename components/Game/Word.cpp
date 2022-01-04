@@ -1,7 +1,18 @@
 #include "./Word.hpp"
 
-Word::Word(const string& _word) {
+Word::Word(const string& _word, const raylib::Window& win) {
+	constexpr auto rotationSpan = 45.f, 
+		minRotation = 2*PI*(-rotationSpan/360), 
+		maxRotation = 2*PI*(rotationSpan/360);
 	text = _word;
+	rotation = (1.f*rand()/RAND_MAX) * (maxRotation - minRotation) + minRotation;
+	textSize = raylib::MeasureText(text, fontSize);
+	height = abs(sin(rotation))*textSize;
+	width = abs(cos(rotation))*textSize;
+	pos = raylib::Vector2{
+		(1.f*rand()/RAND_MAX) * win.GetWidth(),
+		-height
+	};
 }
 
 void Word::setSpeed(float _speed) {
@@ -35,4 +46,8 @@ void Word::draw() {
 		fontSpacing,
 		fontColor
 	);
+}
+
+raylib::Vector2 Word::getPos() {
+	return pos;
 }

@@ -10,17 +10,17 @@
 #include "./components/SpriteSheet.hpp"
 #include "./components/Animation.hpp"
 
+#include "./scenes/Scene.cpp"
+#include "./scenes/Game.hpp"
+
 using namespace std;
 
-enum _scene {
-    MENU = 0,
-    GAME = 1,
-    OPTIONS = 2,
-    CUTSCENE = 3,
-    EXIT = -1
-};
-
-using scene = _scene;
+// void _deactivateButtons(vector<shared_ptr<UIElement>>& _stack) {
+//     for (auto& el : _stack) {
+//         auto cEl = dynamic_cast<Button*>(el.get());
+//         if (cEl != nullptr) cEl->setClick([]() {});
+//     }
+// }
 
 void _addStack(vector<shared_ptr<UIElement>>& Q, const shared_ptr<UIElement>& el) {
     Q.push_back(el);
@@ -59,9 +59,13 @@ vector<shared_ptr<UIElement>> setPosStack(int padding, Alignment align, const sh
     return Q;
 }
 
-void startAnimation(raylib::Window& win, vector<shared_ptr<UIElement>>& drawStack, int& sceneState) {
-    raylib::Vector2 winSize = win.GetSize();
-    raylib::Vector2 midSize = winSize.Divide(2.f);
+void startAnimation(
+    raylib::Window& win, 
+    shared_ptr<vector<shared_ptr<UIElement>>>& drawStack,
+    int& sceneState
+) {
+    raylib::Vector2 winSize{win.GetSize()},
+        midSize{winSize.Divide(2.f)};
  
     // raylib::Window w1{100, 100, "Virus"};
     // w1.SetPosition(
@@ -109,22 +113,15 @@ void startAnimation(raylib::Window& win, vector<shared_ptr<UIElement>>& drawStac
     }).detach();
 
     auto Q = setPosStack(10, HORIZONTAL, bossAnimation, bubbleAnimation);
-    drawStack.push_back(backgroundAnimation);
-    for (auto& e : Q) drawStack.push_back(e);
-}
-
-void _deactivateButtons(vector<shared_ptr<UIElement>>& _stack) {
-    for (auto& el : _stack) {
-        auto cEl = dynamic_cast<Button*>(el.get());
-        if (cEl != nullptr) cEl->setClick([]() {});
-    }
+    drawStack->push_back(backgroundAnimation);
+    for (auto& e : Q) drawStack->push_back(e);
 }
 
 void drawMenu(
     raylib::Window& win, 
     int& sceneState, 
-    vector<shared_ptr<UIElement>>& drawStack,
-    vector<shared_ptr<UIElement>>& drawStatic
+    shared_ptr<vector<shared_ptr<UIElement>>> drawStack,
+    shared_ptr<vector<shared_ptr<UIElement>>> drawStatic
 ) {
     constexpr int maxButtonWidth = 100;
     raylib::Vector2 winSize = win.GetSize(),
@@ -142,19 +139,19 @@ void drawMenu(
     start->setFontColor(raylib::Color::DarkGreen());
 
     options->setClick([&sceneState] () {
-        sceneState = scene::OPTIONS;
+        sceneState = scene_type::OPTIONS;
     });
     options->setBorder(raylib::Color::DarkGreen());
     options->setFontColor(raylib::Color::DarkGreen());
 
     exit->setClick([&sceneState] () {
-        sceneState = scene::EXIT;
+        sceneState = scene_type::EXIT;
     });
     exit->setBorder(raylib::Color::DarkGreen());
     exit->setFontColor(raylib::Color::DarkGreen());
 
     auto Q = setPosStack(10, VERTICAL, start, options, exit);
-    for (auto& e : Q) drawStack.push_back(e);
+    for (auto e : Q) drawStack->push_back(e);
 }
 
 void handleUI(shared_ptr<UIElement>& el, raylib::Mouse& mouseInput) {
@@ -167,45 +164,39 @@ void handleUI(shared_ptr<UIElement>& el, raylib::Mouse& mouseInput) {
 }
 
 bool gameLoop(
-    raylib::Window& win, 
-    int& sceneState, 
-    vector<shared_ptr<UIElement>>& drawStack,
-    vector<shared_ptr<UIElement>>& drawStatic
+    shared_ptr<raylib::Window>& win,
+    int& sceneState,
+    shared_ptr<Scene>& currentScene,
+    shared_ptr<vector<shared_ptr<UIElement>>> drawStack,
+    shared_ptr<vector<shared_ptr<UIElement>>> drawStatic
 ) {
-    win.BeginDrawing();
-    win.ClearBackground(raylib::Color::DarkGray());
+    win->BeginDrawing();
+    win->ClearBackground(raylib::Color::DarkGray());
 
     int copy{sceneState};
     switch (sceneState) {
         case CUTSCENE:
             break;
         case MENU:
-            drawMenu(win, sceneState, drawStack, drawStatic);
+            drawMenu(*win, sceneState, drawStack, drawStatic);
             break;
         default:
-            win.EndDrawing();
+            win->EndDrawing();
             return false;
     }
-    if (copy != sceneState) drawStatic.clear();
+    if (copy != sceneState) drawStatic->clear();
+
+    if (currentScene != nullptr)
+        currentScene->draw();
     
     raylib::Mouse mouseInput;
-    for_each(
-        drawStack.begin(),
-        drawStack.end(),
-        [&mouseInput] (decltype(drawStack.front())& el) {
-            handleUI(el, mouseInput);
-        }
-    );
-    for_each(
-        drawStatic.begin(),
-        drawStatic.end(),
-        [&mouseInput] (decltype(drawStack.front())& el) {
-            handleUI(el, mouseInput);
-        }
-    );
-    drawStack.clear();
-    
-    win.EndDrawing();
+    for (auto& el : *drawStack)
+        handleUI(el, mouseInput);
+    for (auto& el : *drawStatic)
+        handleUI(el, mouseInput);
+    drawStack->clear();
+
+    win->EndDrawing();
     return true;
 }
 
@@ -213,17 +204,20 @@ int main() {
     constexpr int screenWidth = 800,
         screenHeight = 450;
 
-    vector<shared_ptr<UIElement>> drawStack, drawStatic;
+    shared_ptr<vector<shared_ptr<UIElement>>> drawStack = make_shared<vector<shared_ptr<UIElement>>>(),
+        drawStatic = make_shared<vector<shared_ptr<UIElement>>>();
 
-    int sceneState{scene::MENU};
+    int sceneState{scene_type::MENU};
 
     raylib::Image icon{"./resources/imgs/icon.ico"};
 
-    raylib::Window w{screenWidth, screenHeight, "MatrixSmasher"};
-    w.SetIcon(icon);
-    w.SetTargetFPS(60);
+    shared_ptr<raylib::Window> w{make_shared<raylib::Window>(screenWidth, screenHeight, "MatrixSmasher")};
+    w->SetIcon(icon);
+    w->SetTargetFPS(60);
+
+    shared_ptr<Scene> startScene{nullptr};
     
-    while (gameLoop(w, sceneState, drawStack, drawStatic));
+    while (gameLoop(w, sceneState, startScene, drawStack, drawStatic));
     
     return 0;
 }

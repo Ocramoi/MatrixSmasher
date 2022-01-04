@@ -10,8 +10,6 @@ Animation::Animation(SpriteSheet _sprite, unsigned int _frameSpeed, raylib::Vect
     frameSpeed = 1000/_frameSpeed;
     pos = _pos;
     frameRec.SetSize({sprite.getFrameWidth(), sprite.getFrameHeight()});
-    std::cout << sprite.getFrameWidth() << std::endl;
-    std::cout << sprite.getFrameHeight() << std::endl;
 }
 
 void Animation::startLoop() {
@@ -95,4 +93,8 @@ float Animation::getHeight() {
 
 unsigned int Animation::getWidth() {
     return frameRec.GetWidth();
+}
+
+void Animation::setFrameSpeed(unsigned int _frameSpeed) {
+    frameSpeed = 1000/_frameSpeed;
 }

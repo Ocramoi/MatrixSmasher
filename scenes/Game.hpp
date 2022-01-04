@@ -3,7 +3,7 @@
 
 #include "./Scene.cpp"
 
-#include <atomic>
+#include <mutex>
 #include <thread>
 #include <chrono>
 #include <random>
@@ -14,21 +14,26 @@
 #include "../components/UIElement.cpp"
 #include "../components/Game/Word.hpp"
 
-using std::atomic;
+using std::mutex;
 using std::thread;
 using std::vector;
 using std::queue;
+using std::lock_guard;
 
 class Game : public Scene {
 	private:
 		shared_ptr<vector<shared_ptr<UIElement>>> drawStack,
 			drawStatic;
 		shared_ptr<raylib::Window> win;
-		atomic<queue<Word>> words;
+		
+		queue<Word> words;
 		bool changeState{false};
 		float var{0.2f}, speed{3000.f};
-		static void _feed(Game& _game);
+		static void _feed(Game* _game);
+		int lives{5};
+		mutex wlMutex;
 		thread feeder;
+		void endGame();
 	public:
 		Game(
 			shared_ptr<raylib::Window>& _win, 
