@@ -37,11 +37,11 @@ void SpriteSheet::setAlignment(Alignment _align) {
 }
  
 float SpriteSheet::getFrameWidth() {
-    return (align == HORIZONTAL) ? scaled->GetWidth() / amntFrames : scaled->GetWidth();
+    return (align == HORIZONTAL) ? (scaled->GetWidth() / amntFrames) : scaled->GetWidth();
 }
 
 float SpriteSheet::getFrameHeight() {
-    return (align == VERTICAL) ? scaled->GetHeight() / amntFrames : scaled->GetHeight();
+    return (align == VERTICAL) ? (scaled->GetHeight() / amntFrames) : scaled->GetHeight();
 }
 
 void SpriteSheet::scale(float newScale) {
@@ -49,4 +49,5 @@ void SpriteSheet::scale(float newScale) {
         newScale*sheet->GetWidth(),
         newScale*sheet->GetHeight()
     ));
+    texture = scaled->LoadTexture();
 }

@@ -7,9 +7,11 @@ using std::move;
 
 Animation::Animation(SpriteSheet _sprite, unsigned int _frameSpeed, raylib::Vector2 _pos) {
     sprite = _sprite;
-    frameSpeed = _frameSpeed;
+    frameSpeed = 1000/_frameSpeed;
     pos = _pos;
     frameRec.SetSize({sprite.getFrameWidth(), sprite.getFrameHeight()});
+    std::cout << sprite.getFrameWidth() << std::endl;
+    std::cout << sprite.getFrameHeight() << std::endl;
 }
 
 void Animation::startLoop() {
@@ -17,16 +19,17 @@ void Animation::startLoop() {
 }
 
 void Animation::startLoop(bool shouldLoop) {
-    animHandler = thread([&] () {
-        std::this_thread::sleep_for(std::chrono::milliseconds(frameSpeed));
-        auto qnt = sprite.getAmntFrames();
-        // std::cout << qnt << std::endl;
-        if (frameCounter >= qnt) {
-            if (!shouldLoop) this->stopLoop();
-        }
-        frameCounter++;
-        if (qnt != 0)
+    animHandler = thread([&, shouldLoop] () {
+        while (true) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(frameSpeed));
+            auto qnt = sprite.getAmntFrames();
+            if (++frameCounter >= qnt && !shouldLoop) {
+                frameCounter--;
+                break;
+            }
             frameCounter %= qnt;
+        }
+        this->stopLoop();
     });
     animHandler.detach();
 }
@@ -79,14 +82,17 @@ void Animation::setClick(const function<void()>& f) {
 
 void Animation::draw() {
     if (sprite.getAlignment() == VERTICAL)
-        frameRec.SetPosition({0.0f, frameCounter * sprite.getFrameWidth()});
-    else 
-        frameRec.SetPosition({static_cast<float>(frameCounter) * sprite.getFrameHeight(), 0.0f});
+        frameRec.SetPosition({0.0f, 1.f*frameCounter*sprite.getFrameHeight()});
+    else  
+        frameRec.SetPosition({static_cast<float>(frameCounter) * sprite.getFrameWidth(), 0.0f});
 
-    // DrawTexture(sprite.getTexture(), pos.x, pos.y, WHITE);    
     DrawTextureRec(sprite.getTexture(), frameRec, pos, WHITE);
 }
 
 float Animation::getHeight() {
-    return sprite.getSheet().GetHeight()*1.f;
+    return frameRec.GetHeight();
+}
+
+unsigned int Animation::getWidth() {
+    return frameRec.GetWidth();
 }

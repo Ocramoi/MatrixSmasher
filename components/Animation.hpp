@@ -23,7 +23,7 @@ class Animation : public UIElement {
                      frameCounter{0};
         raylib::Rectangle frameRec{ 0.0f, 0.0f, 0.0f, 0.0f};
         raylib::Rectangle boundingBox{-1};
-        thread animHandler;        
+        thread animHandler;   
     public:
         Animation() {}
         ~Animation() {
@@ -45,6 +45,7 @@ class Animation : public UIElement {
         void interact();
         void setClick(const function<void()>& f);
         float getHeight();
+        unsigned int getWidth();
         void draw();
 };
 
