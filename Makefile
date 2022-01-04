@@ -95,9 +95,18 @@
 # clean:
 # 	$(RM) $(call platformpth, $(buildDir)/*)
 
-OUT=bin/matrix
+OUT_F=out/
+EXEC=matrix
+CXX=clang++
 CXXFLAGS=-lraylib -ldl -lrt -lX11 -lGL -lpthread -std=gnu++17
-ARQS=components/*.cpp
+RELEASE_FLAGS=-Wall -Wextra -Ofast -std=gnu++17 -march=native
+DEBUG_FLAGS=-Wall -Wextra -Wpedantic -Og -g3 -DDEBUG -std=gnu++17 -Weffc++ -march=native
+VALGRIND_FLAGS=-s --leak-check=full --show-leak-kinds=all --track-origins=yes
+COMPONENTS=components/*.cpp
+SCENES=scenes/*.cpp
 
-all:
-	clang++ -o $(OUT) *.cpp $(ARQS) $(CXXFLAGS)
+all: bin/components.o
+	$(CXX) -o $(OUT)$(EXEC) *.cpp $(ARQS) $(CXXFLAGS) $(RELEASE_FLAGS)
+
+bin/components.o:
+	$(CXX) -c bin/components.o $(COMPONENTS) $(CXXFLAGS)

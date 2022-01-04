@@ -33,6 +33,6 @@ void Word::draw() {
 		rotation,
 		fontSize,
 		fontSpacing,
-		BLACK
+		fontColor
 	);
 }

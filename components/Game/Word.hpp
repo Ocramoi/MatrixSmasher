@@ -13,6 +13,7 @@ class Word {
 			rotation{0.f},
 			fontSize{20.f},
 			fontSpacing{2.f};
+		raylib::Color fontColor{raylib::Color::Black()};
 		raylib::Vector2 pos{-1.f, -1.f};
 		string text{""};
 	public:
