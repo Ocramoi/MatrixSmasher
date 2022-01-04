@@ -10,7 +10,9 @@ using std::string;
 class Word {
 	private:
 		float speed{10.f},
-			rotation{0.f};
+			rotation{0.f},
+			fontSize{20.f},
+			fontSpacing{2.f};
 		raylib::Vector2 pos{-1.f, -1.f};
 		string text{""};
 	public:
@@ -20,6 +22,7 @@ class Word {
 		Word(const string &_word);
 		raylib::Vector2 getPos();
 		bool input(char key);
+		void draw();
 };
 
 #endif

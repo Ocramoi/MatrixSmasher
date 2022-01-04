@@ -33,6 +33,7 @@ void Game::draw() {
 	auto qnt{words.load().size()};
 	while (qnt-- > 0) {
 		auto temp = words.load().front(); words.load().pop();
+		temp.draw();
 		temp.fall();
 		if (!temp.input(keyPress) && temp.getPos().y < win->GetHeight()) words.load().push(temp);
 	}

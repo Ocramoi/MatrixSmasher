@@ -22,5 +22,17 @@ bool Word::input(char key) {
 	if (key == 0 || key != text.front()) return false;
 	text.erase(text.begin());
 	return text.empty();
+}
 
+void Word::draw() {
+	raylib::DrawTextPro(
+		raylib::Font{GetFontDefault()},
+		text,
+		pos,
+		pos,
+		rotation,
+		fontSize,
+		fontSpacing,
+		BLACK
+	);
 }
