@@ -21,31 +21,33 @@ using std::queue;
 using std::lock_guard;
 
 class Game : public Scene {
-	private:
-		shared_ptr<vector<shared_ptr<UIElement>>> drawStack,
-			drawStatic;
-		shared_ptr<Scene> curScene;
-		shared_ptr<raylib::Window> win;
-	
-		queue<Word> words;
-		bool changeState{false};
-		float var{0.2f}, speed{3000.f};
-		static void _feed(Game* _game);
-		int lives{5};
-		mutex wlMutex;
-		thread feeder;
-		void endGame();
-	public:
-		Game(
-			shared_ptr<raylib::Window>& _win, 
-			shared_ptr<vector<shared_ptr<UIElement>>>& _drawStack, 
-			shared_ptr<vector<shared_ptr<UIElement>>>& _drawStatic,
-			shared_ptr<Scene>& _curScene
-		);
-		void init();
-		void draw();
-		void setSpeed(unsigned int _speed);
-		void getSpeed();
+    private:
+        shared_ptr<vector<shared_ptr<UIElement>>> drawStack,
+            drawStatic;
+        shared_ptr<Scene> curScene;
+        shared_ptr<raylib::Window> win;
+
+        queue<Word> words;
+        bool changeState{false};
+        float var{0.2f}, speed{3000.f};
+        static void _feed(Game* _game);
+        int lives{5};
+        mutex wlMutex;
+        thread feeder;
+        void endGame();
+    public:
+        mutex drawMutex;
+        Game(
+            shared_ptr<raylib::Window>& _win,
+            shared_ptr<vector<shared_ptr<UIElement>>>& _drawStack,
+            shared_ptr<vector<shared_ptr<UIElement>>>& _drawStatic,
+            shared_ptr<Scene>& _curScene
+        );
+        ~Game();
+        void init();
+        void draw();
+        void setSpeed(unsigned int _speed);
+        void getSpeed();
 };
 
 #endif

@@ -2,7 +2,6 @@
 #define CUTSCENE_H_
 
 #include "./Scene.cpp"
-#include "./CutScene.hpp"
 #include "./Credits.hpp"
 
 #include <vector>
@@ -34,12 +33,12 @@ class CutScene : public Scene {
 		thread changeScene;
 		void setThread();
 	public:
-		CutScene() {}
 		CutScene(shared_ptr<raylib::Window>& _win,
 		 	shared_ptr<vector<shared_ptr<UIElement>>>& _drawStack,
 			shared_ptr<vector<shared_ptr<UIElement>>>& _drawStatic,
-			shared_ptr<Scene>& _curScene
-			);
+			shared_ptr<Scene>& _curScene);
+		~CutScene();
+        mutex drawMutex;
         void appendSprite(shared_ptr<Animation>& newSprite, const bool shouldLoop);
         void appendSprite(SpriteSheet& spriteSheet,  
                         raylib::Vector2 startPos,                    

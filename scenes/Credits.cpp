@@ -1,15 +1,16 @@
 #include "./Credits.hpp"
+#include "./Menu.hpp"
 
 using std::make_pair;
 using std::make_shared;
 
 Credits::Credits(
     shared_ptr<raylib::Window>& _win,
-	shared_ptr<vector<shared_ptr<UIElement>>>& _drawStack,
-	shared_ptr<vector<shared_ptr<UIElement>>>& _drawStatic,
-	shared_ptr<Scene>& _curScene
+    shared_ptr<vector<shared_ptr<UIElement>>>& _drawStack,
+    shared_ptr<vector<shared_ptr<UIElement>>>& _drawStatic,
+    shared_ptr<Scene>& _curScene
 ) {
-	win = _win; drawStack = _drawStack; drawStatic = _drawStatic;
+    win = _win; drawStack = _drawStack; drawStatic = _drawStatic;
     curScene = _curScene;
     SpriteSheet boss{raylib::Image{"./resources/spritesheets/boss.png"}, 4, HORIZONTAL};
     sprite = { make_shared<Animation>(boss, 12U, raylib::Vector2{0, 0}), true };

@@ -17,22 +17,23 @@
 using std::shared_ptr;
 
 class Menu : public Scene {
-	private:
-		shared_ptr<vector<shared_ptr<UIElement>>> drawStack,
-						  drawStatic;
-		shared_ptr<Scene> curScene;
-		shared_ptr<raylib::Window> win;
-		// scene_type sceneState;
-	public:
-		Menu(
-			shared_ptr<raylib::Window>& _win,
-		 	shared_ptr<vector<shared_ptr<UIElement>>>& _drawStack,
-			shared_ptr<vector<shared_ptr<UIElement>>>& _drawStatic,
-			shared_ptr<Scene>& _curScene
-		);
-		~Menu();
-		void init();
-		void draw();
+    private:
+        shared_ptr<vector<shared_ptr<UIElement>>> drawStack,
+            drawStatic;
+        shared_ptr<Scene> curScene;
+        shared_ptr<raylib::Window> win;
+        // scene_type sceneState;
+    public:
+        mutex drawMutex;
+        Menu(
+            shared_ptr<raylib::Window>& _win,
+            shared_ptr<vector<shared_ptr<UIElement>>>& _drawStack,
+            shared_ptr<vector<shared_ptr<UIElement>>>& _drawStatic,
+            shared_ptr<Scene>& _curScene
+        );
+        ~Menu();
+        void init();
+        void draw();
 };
 
 #endif

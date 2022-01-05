@@ -2,6 +2,23 @@
 
 using std::max;
 
+Game::Game(
+	shared_ptr<raylib::Window>& _win,
+	shared_ptr<vector<shared_ptr<UIElement>>>& _drawStack,
+	shared_ptr<vector<shared_ptr<UIElement>>>& _drawStatic,
+	shared_ptr<Scene>& _curScene
+) {
+	win = _win; drawStack = _drawStack; drawStatic = _drawStatic;
+	curScene = _curScene;
+	feeder = thread([&]() { Game::_feed(this); });
+	feeder.detach();
+}
+
+Game::~Game() {
+	lock_guard<mutex> guard{drawMutex};
+	drawStatic->clear();
+}
+
 void Game::_feed(Game* _game) {
 	while (true) {
 		{
@@ -16,18 +33,6 @@ void Game::_feed(Game* _game) {
 			std::chrono::milliseconds(static_cast<int>(timeout))
 		);
 	}
-}
-
-Game::Game(
-	shared_ptr<raylib::Window>& _win, 
-	shared_ptr<vector<shared_ptr<UIElement>>>& _drawStack, 
-	shared_ptr<vector<shared_ptr<UIElement>>>& _drawStatic,
-	shared_ptr<Scene>& _curScene
-) {
-	win = _win; drawStack = _drawStack; drawStatic = _drawStatic;
-	curScene = _curScene;
-	feeder = thread([&]() { Game::_feed(this); });
-	feeder.detach();
 }
 
 void Game::init() {}

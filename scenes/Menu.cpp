@@ -6,7 +6,7 @@ using std::max;
 Menu::Menu(
     shared_ptr<raylib::Window>& _win,
     shared_ptr<vector<shared_ptr<UIElement>>>& _drawStack,
-	shared_ptr<vector<shared_ptr<UIElement>>>& _drawStatic,
+    shared_ptr<vector<shared_ptr<UIElement>>>& _drawStatic,
     shared_ptr<Scene>& _curScene
 ) {
     win = _win; 
@@ -63,7 +63,8 @@ void Menu::init() {
     });
 
     exit->setClick([&] () {
-        curScene = nullptr;
+        curScene.reset();
+        // = nullptr;
     });
 
     for (auto &el : Logic::setPosStack(10, VERTICAL, start, options, exit))

@@ -4,14 +4,21 @@ using std::make_pair;
 using std::make_shared;
 using std::max;
 using std::move;
+using std::lock_guard;
 
-CutScene::CutScene(shared_ptr<raylib::Window>& _win,
-		 	shared_ptr<vector<shared_ptr<UIElement>>>& _drawStack,
-			shared_ptr<vector<shared_ptr<UIElement>>>& _drawStatic,
-            shared_ptr<Scene>& _curScene
-			) {
+CutScene::CutScene(
+    shared_ptr<raylib::Window>& _win,
+    shared_ptr<vector<shared_ptr<UIElement>>>& _drawStack,
+    shared_ptr<vector<shared_ptr<UIElement>>>& _drawStatic,
+    shared_ptr<Scene>& _curScene
+) {
     win = _win; drawStack = _drawStack; drawStatic = _drawStatic;
     curScene = _curScene;
+}
+
+CutScene::~CutScene() {
+    lock_guard<mutex> guard{drawMutex};
+    drawStatic->clear();
 }
 
 void CutScene::appendSprite(shared_ptr<Animation>& newSprite, const bool shouldLoop) {
