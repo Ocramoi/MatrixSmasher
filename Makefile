@@ -9,17 +9,16 @@ COMPONENTS=$(wildcard components/*.cpp) $(wildcard components/*/*.cpp)
 SCENES=$(wildcard scenes/*.cpp)
 ARQS=*.o
 
-all:
-	$(CXX) -o $(OUT_F)/$(EXEC) *.cpp $(ARQS) $(CXXFLAGS) $(RELEASE_FLAGS)
+RUNFLAGS:=$(DEBUG_FLAGS)
 
-debug:
-	$(CXX) -o $(OUT_F)/$(EXEC) *.cpp $(ARQS) $(CXXFLAGS) $(DEBUG_FLAGS)
+all:
+	$(CXX) -o $(OUT_F)/$(EXEC) *.cpp $(ARQS) $(CXXFLAGS) $(RUNFLAGS)
 
 components_o:
-	$(CXX) -c $(COMPONENTS) $(CXXFLAGS) $(RELEASE_FLAGS)
+	$(CXX) -c $(COMPONENTS) $(CXXFLAGS) $(RUNFLAGS)
 
 scenes_o:
-	$(CXX) -c $(SCENES) $(CXXFLAGS) $(RELEASE_FLAGS)
+	$(CXX) -c $(SCENES) $(CXXFLAGS) $(RUNFLAGS)
 
 run:
 	./$(OUT_F)/$(EXEC)

@@ -3,11 +3,16 @@
 using std::make_pair;
 using std::make_shared;
 
-Credits::Credits(shared_ptr<raylib::Window>& _win,
-		 	shared_ptr<vector<shared_ptr<UIElement>>>& _drawStack,
-			shared_ptr<vector<shared_ptr<UIElement>>>& _drawStatic
-			) {
+Credits::Credits(
+    shared_ptr<raylib::Window>& _win,
+	shared_ptr<vector<shared_ptr<UIElement>>>& _drawStack,
+	shared_ptr<vector<shared_ptr<UIElement>>>& _drawStatic,
+	shared_ptr<Scene>& _curScene
+) {
 	win = _win; drawStack = _drawStack; drawStatic = _drawStatic;
+    curScene = _curScene;
+    SpriteSheet boss{raylib::Image{"./resources/spritesheets/boss.png"}, 4, HORIZONTAL};
+    sprite = { make_shared<Animation>(boss, 12U, raylib::Vector2{0, 0}), true };
 }
 
 void Credits::setSprite(shared_ptr<Animation>& _sprite) {
@@ -27,7 +32,7 @@ void Credits::init() {
     back->setBorder(raylib::Color::DarkGreen());
     back->setFontColor(raylib::Color::DarkGreen());
     back->setClick([&] () {
-        _toggleScene(this);
+        curScene = make_shared<Menu>(win, drawStack, drawStatic, curScene);
     });
     
     drawStatic->push_back(sprite.first);

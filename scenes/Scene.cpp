@@ -17,7 +17,6 @@ enum _scene {
     CUTSCENE = 3,
     EXIT = -1
 };
-
 using scene_type = _scene;
 
 class Scene {

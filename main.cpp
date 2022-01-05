@@ -12,6 +12,7 @@
 
 #include "./scenes/Scene.cpp"
 #include "./scenes/Game.hpp"
+#include "./scenes/Menu.hpp"
 
 using namespace std;
 
@@ -22,137 +23,100 @@ using namespace std;
 //     }
 // }
 
-void _addStack(vector<shared_ptr<UIElement>>& Q, const shared_ptr<UIElement>& el) {
-    Q.push_back(el);
-}
-
-template <class... UIs>
-void _addStack(vector<shared_ptr<UIElement>>& Q, const shared_ptr<UIElement>& el, UIs... els) {
-    Q.push_back(el);
-    _addStack(Q, els...);
-}
-
-template <class... UIs>
-vector<shared_ptr<UIElement>> setPosStack(int padding, Alignment align, const shared_ptr<UIElement>& el, UIs... els) {
-    vector<shared_ptr<UIElement>> Q{};
-    _addStack(Q, el, els...);
-    
-    int sumHeight{-padding};
-    int sumWidth{-padding};
-    for (const auto& e : Q) {
-        sumHeight += e->getHeight() + padding;
-        sumWidth += e->getWidth() + padding;
-    }
-
-    int tempHeight{sumHeight/2};
-    int tempWidth{sumWidth/2};
-    for (auto& e : Q) {
-        if (align == VERTICAL) 
-            e->setPosition(e->getPosition().Subtract({ e->getWidth()*1.f/2, tempHeight*1.f }));
-        else 
-            e->setPosition(e->getPosition().Subtract({tempWidth*1.f, e->getHeight()*1.f/2}));
-
-        tempHeight -= e->getHeight() + padding;
-        tempWidth -= e->getWidth() + padding;
-    }
-
-    return Q;
-}
-
-void startAnimation(
-    raylib::Window& win, 
-    shared_ptr<vector<shared_ptr<UIElement>>>& drawStack,
-    int& sceneState
-) {
-    raylib::Vector2 winSize{win.GetSize()},
-        midSize{winSize.Divide(2.f)};
+// void startAnimation(
+//     raylib::Window& win, 
+//     shared_ptr<vector<shared_ptr<UIElement>>>& drawStack,
+//     int& sceneState
+// ) {
+//     raylib::Vector2 winSize{win.GetSize()},
+//         midSize{winSize.Divide(2.f)};
  
-    // raylib::Window w1{100, 100, "Virus"};
-    // w1.SetPosition(
-    //     min(
-    //         max(
-    //             0.f,
-    //             win.GetPosition().x + (rand()*500 - 250)
-    //         ),
-    //         GetScreenWidth()*1.f
-    //     ),
-    //     min(
-    //         max(
-    //             0.f,
-    //             win.GetPosition().y + (rand()*300 - 150)
-    //         ),
-    //         GetScreenHeight()*1.f
-    //     )
-    // );
-    // thread([])
+//     // raylib::Window w1{100, 100, "Virus"};
+//     // w1.SetPosition(
+//     //     min(
+//     //         max(
+//     //             0.f,
+//     //             win.GetPosition().x + (rand()*500 - 250)
+//     //         ),
+//     //         GetScreenWidth()*1.f
+//     //     ),
+//     //     min(
+//     //         max(
+//     //             0.f,
+//     //             win.GetPosition().y + (rand()*300 - 150)
+//     //         ),
+//     //         GetScreenHeight()*1.f
+//     //     )
+//     // );
+//     // thread([])
 
-    SpriteSheet boss{raylib::Image{"./resources/spritesheets/boss.png"}, 4, HORIZONTAL};
-    boss.scale(0.7);
+//     SpriteSheet boss{raylib::Image{"./resources/spritesheets/boss.png"}, 4, HORIZONTAL};
+//     boss.scale(0.7);
 
-    SpriteSheet bubble{raylib::Image{"./resources/spritesheets/bubble.png"}, 30, HORIZONTAL};
-    bubble.scale(0.5);
+//     SpriteSheet bubble{raylib::Image{"./resources/spritesheets/bubble.png"}, 30, HORIZONTAL};
+//     bubble.scale(0.5);
 
-    SpriteSheet background{raylib::Image{"./resources/spritesheets/background.png"}, 1, VERTICAL};
-    auto backScale = max(
-        winSize.x/background.getFrameWidth(), 
-        winSize.y/background.getFrameHeight()
-    );
-    background.scale(backScale);
+//     SpriteSheet background{raylib::Image{"./resources/spritesheets/background.png"}, 1, VERTICAL};
+//     auto backScale = max(
+//         winSize.x/background.getFrameWidth(), 
+//         winSize.y/background.getFrameHeight()
+//     );
+//     background.scale(backScale);
 
-    auto bossAnimation = make_shared<Animation>(boss, 12U, midSize),
-        bubbleAnimation = make_shared<Animation>(bubble, 12U, midSize),
-        backgroundAnimation = make_shared<Animation>(background, 12U, raylib::Vector2{ 0.f, 0.f });
+//     auto bossAnimation = make_shared<Animation>(boss, 12U, midSize),
+//         bubbleAnimation = make_shared<Animation>(bubble, 12U, midSize),
+//         backgroundAnimation = make_shared<Animation>(background, 12U, raylib::Vector2{ 0.f, 0.f });
     
-    bossAnimation->startLoop(true);
-    bubbleAnimation->startLoop(false);
-    backgroundAnimation->startLoop(true);
+//     bossAnimation->startLoop(true);
+//     bubbleAnimation->startLoop(false);
+//     backgroundAnimation->startLoop(true);
 
-    thread([&sceneState] () {
-        this_thread::sleep_for(chrono::seconds(3));
-        sceneState = GAME;
-    }).detach();
+//     thread([&sceneState] () {
+//         this_thread::sleep_for(chrono::seconds(3));
+//         sceneState = GAME;
+//     }).detach();
 
-    auto Q = setPosStack(10, HORIZONTAL, bossAnimation, bubbleAnimation);
-    drawStack->push_back(backgroundAnimation);
-    for (auto& e : Q) drawStack->push_back(e);
-}
+//     auto Q = setPosStack(10, HORIZONTAL, bossAnimation, bubbleAnimation);
+//     drawStack->push_back(backgroundAnimation);
+//     for (auto& e : Q) drawStack->push_back(e);
+// }
 
-void drawMenu(
-    raylib::Window& win, 
-    int& sceneState, 
-    shared_ptr<vector<shared_ptr<UIElement>>> drawStack,
-    shared_ptr<vector<shared_ptr<UIElement>>> drawStatic
-) {
-    constexpr int maxButtonWidth = 100;
-    raylib::Vector2 winSize = win.GetSize(),
-        midSize = winSize.Divide(2.f);
+// void drawMenu(
+//     raylib::Window& win, 
+//     int& sceneState, 
+//     shared_ptr<vector<shared_ptr<UIElement>>> drawStack,
+//     shared_ptr<vector<shared_ptr<UIElement>>> drawStatic
+// ) {
+//     constexpr int maxButtonWidth = 100;
+//     raylib::Vector2 winSize = win.GetSize(),
+//         midSize = winSize.Divide(2.f);
 
-    auto start = make_shared<Button>("Start", midSize, maxButtonWidth), 
-        options = make_shared<Button>("Options", midSize, maxButtonWidth),
-        exit = make_shared<Button>("Exit", midSize, maxButtonWidth);
+//     auto start = make_shared<Button>("Start", midSize, maxButtonWidth), 
+//         options = make_shared<Button>("Options", midSize, maxButtonWidth),
+//         exit = make_shared<Button>("Exit", midSize, maxButtonWidth);
 
-    start->setClick([&] () {
-        sceneState = CUTSCENE;
-        startAnimation(win, drawStatic, sceneState);
-    });
-    start->setBorder(raylib::Color::DarkGreen());
-    start->setFontColor(raylib::Color::DarkGreen());
+//     start->setClick([&] () {
+//         sceneState = scene_type::CUTSCENE;
+//         startAnimation(win, drawStatic, sceneState);
+//     });
+//     start->setBorder(raylib::Color::DarkGreen());
+//     start->setFontColor(raylib::Color::DarkGreen());
 
-    options->setClick([&sceneState] () {
-        sceneState = scene_type::OPTIONS;
-    });
-    options->setBorder(raylib::Color::DarkGreen());
-    options->setFontColor(raylib::Color::DarkGreen());
+//     options->setClick([&sceneState] () {
+//         sceneState = scene_type::OPTIONS;
+//     });
+//     options->setBorder(raylib::Color::DarkGreen());
+//     options->setFontColor(raylib::Color::DarkGreen());
 
-    exit->setClick([&sceneState] () {
-        sceneState = scene_type::EXIT;
-    });
-    exit->setBorder(raylib::Color::DarkGreen());
-    exit->setFontColor(raylib::Color::DarkGreen());
+//     exit->setClick([&sceneState] () {
+//         sceneState = scene_type::EXIT;
+//     });
+//     exit->setBorder(raylib::Color::DarkGreen());
+//     exit->setFontColor(raylib::Color::DarkGreen());
 
-    auto Q = setPosStack(10, VERTICAL, start, options, exit);
-    for (auto e : Q) drawStack->push_back(e);
-}
+//     auto Q = setPosStack(10, VERTICAL, start, options, exit);
+//     for (auto e : Q) drawStack->push_back(e);
+// }
 
 void handleUI(shared_ptr<UIElement>& el, raylib::Mouse& mouseInput) {
     if (mouseInput.IsButtonDown(MOUSE_LEFT_BUTTON)) {
@@ -165,7 +129,6 @@ void handleUI(shared_ptr<UIElement>& el, raylib::Mouse& mouseInput) {
 
 bool gameLoop(
     shared_ptr<raylib::Window>& win,
-    int& sceneState,
     shared_ptr<Scene>& currentScene,
     shared_ptr<vector<shared_ptr<UIElement>>> drawStack,
     shared_ptr<vector<shared_ptr<UIElement>>> drawStatic
@@ -173,21 +136,11 @@ bool gameLoop(
     win->BeginDrawing();
     win->ClearBackground(raylib::Color::DarkGray());
 
-    int copy{sceneState};
-    switch (sceneState) {
-        case CUTSCENE:
-            break;
-        case MENU:
-            drawMenu(*win, sceneState, drawStack, drawStatic);
-            break;
-        default:
-            win->EndDrawing();
-            return false;
+    if (currentScene == nullptr) {
+        win->EndDrawing();
+        return false;
     }
-    if (copy != sceneState) drawStatic->clear();
-
-    if (currentScene != nullptr)
-        currentScene->draw();
+    currentScene->draw();
     
     raylib::Mouse mouseInput;
     for (auto& el : *drawStack)
@@ -204,10 +157,8 @@ int main() {
     constexpr int screenWidth = 800,
         screenHeight = 450;
 
-    shared_ptr<vector<shared_ptr<UIElement>>> drawStack = make_shared<vector<shared_ptr<UIElement>>>(),
-        drawStatic = make_shared<vector<shared_ptr<UIElement>>>();
-
-    int sceneState{scene_type::MENU};
+    shared_ptr<vector<shared_ptr<UIElement>>> drawStack{make_shared<vector<shared_ptr<UIElement>>>()},
+        drawStatic{make_shared<vector<shared_ptr<UIElement>>>()};
 
     raylib::Image icon{"./resources/imgs/icon.ico"};
 
@@ -215,9 +166,10 @@ int main() {
     w->SetIcon(icon);
     w->SetTargetFPS(60);
 
-    shared_ptr<Scene> startScene{nullptr};
+    shared_ptr<Scene> startScene; startScene = make_shared<Menu>(w, drawStack, drawStatic, startScene);
+    startScene->init();
     
-    while (gameLoop(w, sceneState, startScene, drawStack, drawStatic));
+    while (gameLoop(w, startScene, drawStack, drawStatic));
     
     return 0;
 }

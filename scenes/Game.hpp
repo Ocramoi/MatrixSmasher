@@ -24,8 +24,9 @@ class Game : public Scene {
 	private:
 		shared_ptr<vector<shared_ptr<UIElement>>> drawStack,
 			drawStatic;
+		shared_ptr<Scene> curScene;
 		shared_ptr<raylib::Window> win;
-		
+	
 		queue<Word> words;
 		bool changeState{false};
 		float var{0.2f}, speed{3000.f};
@@ -38,7 +39,8 @@ class Game : public Scene {
 		Game(
 			shared_ptr<raylib::Window>& _win, 
 			shared_ptr<vector<shared_ptr<UIElement>>>& _drawStack, 
-			shared_ptr<vector<shared_ptr<UIElement>>>& _drawStatic
+			shared_ptr<vector<shared_ptr<UIElement>>>& _drawStatic,
+			shared_ptr<Scene>& _curScene
 		);
 		void init();
 		void draw();

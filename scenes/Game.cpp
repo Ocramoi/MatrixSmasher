@@ -21,9 +21,11 @@ void Game::_feed(Game* _game) {
 Game::Game(
 	shared_ptr<raylib::Window>& _win, 
 	shared_ptr<vector<shared_ptr<UIElement>>>& _drawStack, 
-	shared_ptr<vector<shared_ptr<UIElement>>>& _drawStatic
+	shared_ptr<vector<shared_ptr<UIElement>>>& _drawStatic,
+	shared_ptr<Scene>& _curScene
 ) {
 	win = _win; drawStack = _drawStack; drawStatic = _drawStatic;
+	curScene = _curScene;
 	feeder = thread([&]() { Game::_feed(this); });
 	feeder.detach();
 }

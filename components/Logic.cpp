@@ -57,7 +57,11 @@ constexpr auto HEADER_FONT_SIZE{20};
 //     );
 // }
 
-pair<string, unsigned short>Logic::clampText(
+void Logic::_addStack(vector<shared_ptr<UIElement>>& Q, const shared_ptr<UIElement>& el) {
+    Q.push_back(el);
+}
+
+pair<string, unsigned short> Logic::clampText(
     const string &str,
     int maxWidth,
     int fontSize) {
@@ -65,7 +69,7 @@ pair<string, unsigned short>Logic::clampText(
     return clampText(str, maxWidth, fontSize, ignore);
 }
 
-pair<string, unsigned short>Logic::clampText(
+pair<string, unsigned short> Logic::clampText(
     const string &str,
     int maxWidth,
     int fontSize,

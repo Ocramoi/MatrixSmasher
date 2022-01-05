@@ -32,7 +32,6 @@ class Animation : public UIElement {
         void startLoop();
         void startLoop(bool shouldLoop);
         void stopLoop();
-        // Animation(SpriteSheet _sprite, unsigned int _duration, raylib::Vector2 _pos);
         Animation(SpriteSheet _sprite, unsigned int _frameSpeed, raylib::Vector2 _pos);
         SpriteSheet getSprite();
         void setSprite(SpriteSheet _sprite);
