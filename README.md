@@ -1,7 +1,7 @@
 # MatrixSmasher
 Trabalho final de Sistemas Operacionais I - SSC0140
 
-*Realizado utilizando raylib e c++*
+*Realizado utilizando [raylib](https://github.com/raysan5/raylib/) e c++*
 
 ## Contributors | Participantes
 <a href="https://github.com/Ocramoi"><img src="https://avatars.githubusercontent.com/u/9422402?v=4" title="Ocramoi" width="80" height="80"></a>
@@ -50,55 +50,79 @@ sendo apagados e redesenhados a cada iteração do loop.
 ### Jogo
 Como nosso jogo tem uma lógica baseada no problema Produtor-Consumidor, 
 a implementação principal das threads e do semáforo (no nosso caso, implicito no mutex), ficou
-dentro da cena do jogo em si:
+dentro da cena do jogo em si, criando um "pipe" assíncrono na lista de palavras:
 ```cpp
 ./src/components/Game.cpp
 
+void Game::_feed(Game* _game) {
+    // ...
+    while (true) {
+        // Confere fim de jogo de maneira atômica,
+        // situando o acesso ao booleano com um mutex 
+        // bloqueant próprio
+        if (_game->stopFeed.load()) break;
+        
+        // ...
+
+        {
+            // Usando o mutex de wordlist (wlMutex) para 
+            // inserir uma nova palavra de forma thread-safe,
+            // mesmo rodando em uma thread a parte, 
+            // não sincronizada, em relação ao consumidor
+            lock_guard<mutex> guard{_game->wlMutex};
+            _game->words.emplace(_game->availableWords.at(idx), *_game->win);
+        }
+
+        // ...
+
+        {
+            // Usando o mutex do feed de palavras (feedMutex),
+            // aguarda o fim do tempo de espera ou uma 
+            // notificação thread-safe de fora da thread,
+            // para continuar a execução
+            unique_lock<mutex> uFeed(_game->feedMutex);
+            _game->conditionalFeed.wait_for(
+                uFeed,
+                std::chrono::milliseconds(static_cast<int>(timeout))
+            );
+        }
+    }
+    
+    // ...
+}
+
 void Game::draw() {
-	decltype(words.size()) qnt;
-	{
-		lock_guard<mutex> guard{wlMutex};
-		qnt = words.size();
-	}
-	unsigned int textPadding{10},
-		tempH{textPadding};
-	raylib::DrawText("Current lives: " + std::to_string(lives), 10, tempH, fontSize, raylib::Color::Green());
-	tempH += fontSize + textPadding;
-	raylib::DrawText("Score: " + std::to_string(points), 10, tempH, fontSize, raylib::Color::Green());
-	tempH += fontSize + textPadding;
-	raylib::DrawText("Words on screen: " + std::to_string(qnt), 10, tempH, fontSize, raylib::Color::Green());
+    // ...
 
-	auto keyPress{GetCharPressed()};
-	bool anyHits{false},
-		end{false};
-	while (qnt-- > 0) {
-		auto temp = words.front(); words.pop();
-		auto wordInteract{temp.input(keyPress)};
+    decltype(words.size()) qnt;
+    {
+        // Leitura thread-safe to atual tamanho da fila,
+        // usando o mutex de wordlist (wlMutex),
+        // suficiente para o consumo seguro 
+        // dos elementos já que o consumo dos elementos 
+        // será feito de maneira síncrona
+        lock_guard<mutex> guard{wlMutex};
+        qnt = words.size();
+    }
+    
+    // ...
 
-		anyHits |= wordInteract.first;
-
-		if (wordInteract.second) {
-			points += 100;
-			continue;
-		}
-
-		temp.draw();
-		temp.fall();
-		if (temp.getPos().y < win->GetHeight() + 15) {
-			lock_guard<mutex> guard(wlMutex);
-			words.push(temp);
-		}
-		else --lives;
-
-		if (lives <= 0) {
-			end = true;
-			break;
-		}
-	}
-
-	if (keyPress && !anyHits) points *= 0.95;
-
-	if (end) endGame();
+    while (qnt-- > 0) {
+        auto temp = words.front(); words.pop();
+        
+        // ...
+        // Tratamento da palavra no início da fila
+        // ...
+        
+        if (temp.getPos().y < win->GetHeight() + 15) {
+            // Reinserção thread-safe da palavra ao final
+            // da fila caso necessário
+            lock_guard<mutex> guard(wlMutex);
+            words.push(temp);
+        }
+    }
+    
+    // ...
 }
 ```
 
@@ -112,21 +136,35 @@ void Animation::startLoop(bool shouldLoop) {
     auto qnt = sprite.getAmntFrames();
     animHandler = thread([&, shouldLoop, qnt] () {
         while (true) {
-            if (stopThread.load()) break;
-            std::this_thread::sleep_for(std::chrono::milliseconds(frameRate));
-            if (++frameCounter >= qnt && !shouldLoop) {
-                frameCounter--;
-                break;
+            {
+                // Usando o mutex de parada do animador (stopMutex),
+                // aguarda o fim do tempo de espera ou uma 
+                // notificação thread-safe de fora da thread
+                // para continuar a execução
+                unique_lock<mutex> ul(stopMutex);
+                conditialAnimation.wait_for(ul, std::chrono::milliseconds(frameRate));
             }
-            frameCounter %= qnt;
+            
+            // Checagem thread-safe da terminação
+            // de execução, eliminando a thread
+            if (stopThread.load()) break;
+            
+            // Animação cronometrada dos frames...
         }
     });
 }
 
-[...]
-
 void Animation::stopLoop() {
+    // Salva valor atomicamente ao indicador 
+    // de fim de animação
     stopThread.store(true);
+    // Notifica variável condicional do timer
+    // de frames
+    conditialAnimation.notify_all();
+    // Retoma execução síncrona da thread de 
+    // animação de frames para seu fim de execução
+    // e subsequente limpeza de recursos de 
+    // forma segura
     animHandler.join();
 }
 ```

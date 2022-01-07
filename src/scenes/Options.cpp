@@ -172,6 +172,4 @@ void Options::draw() {
  * @brief Destroy the Options:: Options object
  * 
  */
-Options::~Options() {
-    keyboardCapture.~thread();
-}
+Options::~Options() {}
