@@ -1,5 +1,13 @@
 #include "GameOver.hpp"
 
+/**
+ * @brief Construct a new Game Over:: Game Over object
+ * 
+ * @param _win Window of the corresponding scene.
+ * @param _drawStack Vector that draws the stack elements. 
+ * @param _drawStatic Vector that draws the stack elements.
+ * @param _curScene Pointer to the current scene. 
+ */
 GameOver::GameOver(
     shared_ptr<raylib::Window>& _win,
     shared_ptr<vector<shared_ptr<UIElement>>>& _drawStack,
@@ -10,6 +18,15 @@ GameOver::GameOver(
     curScene = &_curScene;
 }
 
+/**
+ * @brief Construct a new Game Over:: Game Over object
+ * 
+ * @param _win Window of the corresponding scene.
+ * @param _drawStack Vector that draws the stack elements. 
+ * @param _drawStatic Vector that draws the stack elements.
+ * @param _curScene Pointer to the current scene.
+ * @param _score Game score.
+ */
 GameOver::GameOver(
     shared_ptr<raylib::Window>& _win,
     shared_ptr<vector<shared_ptr<UIElement>>>& _drawStack,
@@ -23,16 +40,23 @@ GameOver::GameOver(
     texts.back().first += std::to_string(score);
 }
 
-GameOver::~GameOver() {
-    drawStack->clear();
-}
-
+/**
+ * @brief Sets the final score to be displayed on the
+ * game over scene.
+ * 
+ * @param _score New score to be set.
+ */
 void GameOver::setFinalScore(unsigned int _score) {
     score = _score;
     texts.back().first = "Final score: " + std::to_string(score);
     setUI();
 }
 
+/**
+ * @brief Configures all UI elements on the 
+ * GameOver screen.
+ * 
+ */
 void GameOver::setUI() {
     raylib::Vector2 winSize = win->GetSize(),
         midSize = winSize.Divide(2.f);
@@ -62,6 +86,11 @@ void GameOver::setUI() {
     });
 }
 
+/**
+ * @brief Initializes all components of the GameOver scene
+ * and puts them on the drawStack and drawStatic vector if
+ * necessary.
+ */
 void GameOver::init() {
     butCredits = make_shared<Button>("Scoreboard", raylib::Vector2{0, 0});
     butCredits->setClick([&] () {
@@ -113,6 +142,10 @@ void GameOver::init() {
     setUI();
 }
 
+/**
+ * @brief Draws everything that will be looping and 
+ * possibly changing its state throughout the scene
+ */
 void GameOver::draw() {
     for (decltype(texts.size()) i{0}; i < texts.size(); ++i)
         raylib::DrawText(
@@ -122,4 +155,12 @@ void GameOver::draw() {
             texts.at(i).second,
             txtColor
         );
+}
+
+/**
+ * @brief Destroy the Game Over:: Game Over object
+ * 
+ */
+GameOver::~GameOver() {
+    drawStack->clear();
 }

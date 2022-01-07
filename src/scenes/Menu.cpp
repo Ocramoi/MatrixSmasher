@@ -3,6 +3,14 @@
 using std::make_shared;
 using std::max;
 
+/**
+ * @brief Construct a new Menu:: Menu object
+ * 
+ * @param _win Window of the corresponding scene.
+ * @param _drawStack Vector that draws the stack elements. 
+ * @param _drawStatic Vector that draws the stack elements.
+ * @param _curScene Pointer to the current scene. 
+ */
 Menu::Menu(
     shared_ptr<raylib::Window>& _win,
     shared_ptr<vShrdUIEl>& _drawStack,
@@ -15,6 +23,11 @@ Menu::Menu(
     curScene = &_curScene;
 }
 
+/**
+ * @brief Configures all menu buttons
+ * 
+ * @param button Button to be configured.
+ */
 void _configButtons(shared_ptr<Button>& button) {
     button->setBorder(raylib::Color::DarkGreen());
     button->setFontColor(raylib::Color::DarkGreen());
@@ -26,6 +39,12 @@ void _configButtons(shared_ptr<Button>& button, UI... buttons) {
     _configButtons(buttons...);
 }
 
+/**
+ * @brief Initializes all components of the Menu scene
+ * and puts them on the drawStack and drawStatic vector if
+ * necessary.
+ * 
+ */
 void Menu::init() {
     constexpr int maxButtonWidth{150},
         padding{10},
@@ -111,6 +130,10 @@ void Menu::init() {
         drawStatic->push_back(el);
 }
 
+/**
+ * @brief Draws everything that will be looping and 
+ * possibly changing its state throughout the scene
+ */
 void Menu::draw() {
     raylib::DrawText(title, titlePos.x, titlePos.y, titleSize, raylib::Color::Green());
 }

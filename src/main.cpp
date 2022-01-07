@@ -17,9 +17,6 @@
 
 using namespace std;
 
-// TODO scoreboard
-// TODO dvd boss
-
 bool handleUI(shared_ptr<UIElement> el, raylib::Mouse& mouseInput) {
     if (el == nullptr) return true;
     el->draw();

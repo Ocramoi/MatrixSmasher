@@ -25,7 +25,6 @@ class Options : public Scene {
         shared_ptr<Scene>* curScene;
         pair<shared_ptr<Animation>, bool> sprite;
         bool changeState{false};
-        void _toggleScene(Options* _c);
         thread keyboardCapture;
         shared_ptr<Slider> speed;
         vector<shared_ptr<UIElement>> uiEls;

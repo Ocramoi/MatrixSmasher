@@ -2,6 +2,14 @@
 
 using std::to_string;
 
+/**
+ * @brief Construct a new Scoreboard:: Scoreboard object
+ * 
+ * @param _win Window of the corresponding scene.
+ * @param _drawStack Vector that draws the stack elements. 
+ * @param _drawStatic Vector that draws the stack elements.
+ * @param _curScene Pointer to the current scene.
+ */
 Scoreboard::Scoreboard(
     shared_ptr<raylib::Window>& _win,
     shared_ptr<vector<shared_ptr<UIElement>>>& _drawStack,
@@ -14,6 +22,11 @@ Scoreboard::Scoreboard(
 
 Scoreboard::~Scoreboard() {}
 
+/**
+ * @brief Loads all scores from a bin file
+ * 
+ * @param path Path to the save file.
+ */
 void Scoreboard::loadScores(string path) {
     ifstream sRaw; sRaw.open(path, std::ios::in | std::ios::binary);
     if (sRaw.good()) {
@@ -30,6 +43,12 @@ void Scoreboard::loadScores(string path) {
     sRaw.close();
 }
 
+/**
+ * @brief Initializes all components of the Scoreboard scene
+ * and puts them on the drawStack and drawStatic vector if
+ * necessary.
+ * 
+ */
 void Scoreboard::init() {
     loadScores();
 
@@ -64,6 +83,11 @@ void Scoreboard::init() {
     }
 }
 
+/**
+ * @brief Draws everything that will be looping and 
+ * possibly changing its state throughout the scene
+ * 
+ */
 void Scoreboard::draw() {
     for (decltype(texts.size()) i{0}; i < texts.size(); ++i)
         raylib::DrawText(

@@ -23,7 +23,6 @@ class Credits : public Scene {
         pair<shared_ptr<Animation>, bool> sprite;
         bool changeState{false};
         int textPadding{10};
-        void _toggleScene(Credits* _c);
         vector<pair<string, unsigned int>>texts{
                 {"MatrixSmasher", 40},
                 {"Marco Toledo & Milena Correa da Silva", 20},

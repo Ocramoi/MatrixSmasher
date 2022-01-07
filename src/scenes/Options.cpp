@@ -9,6 +9,29 @@ using std::max;
 using std::ofstream;
 using std::ifstream;
 
+/**
+ * @brief Construct a new Options:: Options object
+ * 
+ * @param _win Window of the corresponding scene.
+ * @param _drawStack Vector that draws the stack elements. 
+ * @param _drawStatic Vector that draws the stack elements.
+ * @param _curScene Pointer to the current scene. 
+ */
+Options::Options(
+    shared_ptr<raylib::Window>& _win,
+    shared_ptr<vector<shared_ptr<UIElement>>>& _drawStack,
+    shared_ptr<vector<shared_ptr<UIElement>>>& _drawStatic,
+    shared_ptr<Scene>& _curScene
+) {
+    win = _win; drawStack = _drawStack; drawStatic = _drawStatic;
+    curScene = &_curScene;
+}
+
+/**
+ * @brief Saves current game options to a file.
+ * 
+ * @param path Path to the file containing the options.
+ */
 void Options::saveOptions(string path) {
     nlohmann::json options;
     options["difficulty"] = speed->getValue();
@@ -20,6 +43,11 @@ void Options::saveOptions(string path) {
     std::cout << "Options saved to " << path << std::endl;
 }
 
+/**
+ * @brief Loads the game options from a file.
+ * 
+ * @param path Path to the file containing the options.
+ */
 void Options::loadOptions(string path) {
     ifstream loaded; loaded.open(path);
     nlohmann::json obj;
@@ -44,26 +72,31 @@ void Options::loadOptions(string path) {
     loaded.close();
 }
 
-Options::Options(
-    shared_ptr<raylib::Window>& _win,
-    shared_ptr<vector<shared_ptr<UIElement>>>& _drawStack,
-    shared_ptr<vector<shared_ptr<UIElement>>>& _drawStatic,
-    shared_ptr<Scene>& _curScene
-) {
-    win = _win; drawStack = _drawStack; drawStatic = _drawStatic;
-    curScene = &_curScene;
-}
-
+/**
+ * @brief Changes the sprite of the Options scene
+ * 
+ * @param _sprite New sprite of the scene.
+ */
 void Options::setSprite(shared_ptr<Animation>& _sprite) {
     setSprite(_sprite, true);
 }
 
+/**
+ * @brief Sets the sprite of the Options scene.
+ * 
+ * @param _sprite New sprite of the scene.
+ * @param shouldLoop If the Animation of the sprite should loop.
+ */
 void Options::setSprite(shared_ptr<Animation>& _sprite, const bool shouldLoop) {
     sprite = make_pair(_sprite, shouldLoop);
 }
 
-void Options::_toggleScene(Options* _c) { _c->changeState = true; }
-
+/**
+ * @brief Initializes all components of the Options scene
+ * and puts them on the drawStack and drawStatic vector if
+ * necessary.
+ * 
+ */
 void Options::init() {
     constexpr int maxButtonWidth = 200;
 
@@ -110,6 +143,12 @@ void Options::init() {
     loadOptions();
 };
 
+/**
+ * @brief Draws everything that will be looping and 
+ * possibly changing its state throughout the scene.
+ * 
+ * 
+ */
 void Options::draw() {
     auto key{GetKeyPressed()};
     if (speed->getState() && key) {
@@ -129,6 +168,10 @@ void Options::draw() {
     drawStack->push_back(speed);
 }
 
+/**
+ * @brief Destroy the Options:: Options object
+ * 
+ */
 Options::~Options() {
     keyboardCapture.~thread();
 }

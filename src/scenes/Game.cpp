@@ -8,6 +8,36 @@ using std::random_device;
 using std::ifstream;
 using std::ofstream;
 
+/**
+ * @brief Construct a new Game:: Game object.
+ * 
+ * @param _win Window of the corresponding scene.
+ * @param _drawStack Vector that draws the stack elements. 
+ * @param _drawStatic Vector that draws the stack elements.
+ * @param _curScene Pointer to the current scene.
+ */
+Game::Game(
+	shared_ptr<raylib::Window>& _win,
+	shared_ptr<vector<shared_ptr<UIElement>>>& _drawStack,
+	shared_ptr<vector<shared_ptr<UIElement>>>& _drawStatic,
+	shared_ptr<Scene>& _curScene
+) {
+	win = _win; drawStack = _drawStack; drawStatic = _drawStatic;
+	curScene = &_curScene;
+	#ifdef DEBUG
+	lives = 2;
+	#endif
+	random_device r; rE = default_random_engine(r());
+	loadWords();
+}
+
+
+/**
+ * @brief Load the options file containing all previously 
+ * saves game configurations.
+ * 
+ * @param path Path to the options.
+ */
 void Game::loadOptions(string path) {
     ifstream loaded; loaded.open(path);
     nlohmann::json obj;
@@ -34,6 +64,12 @@ void Game::loadOptions(string path) {
     loaded.close();
 }
 
+/**
+ * @brief Saves/updates the current grame score to a bin
+ * file.
+ * 
+ * @param path Path to the save file.
+ */
 void Game::saveScore(string path) {
 	vector<pair<score_t, difficulty_t>> scores{{ points, diff }};
 
@@ -67,27 +103,23 @@ void Game::saveScore(string path) {
 	oScores.close();
 }
 
-Game::Game(
-	shared_ptr<raylib::Window>& _win,
-	shared_ptr<vector<shared_ptr<UIElement>>>& _drawStack,
-	shared_ptr<vector<shared_ptr<UIElement>>>& _drawStatic,
-	shared_ptr<Scene>& _curScene
-) {
-	win = _win; drawStack = _drawStack; drawStatic = _drawStatic;
-	curScene = &_curScene;
-	#ifdef DEBUG
-	lives = 2;
-	#endif
-	random_device r; rE = default_random_engine(r());
-	loadWords();
-}
-
+/**
+ * @brief Loads the words used in the game.
+ * 
+ * @param path Path to the file containing the words.
+ */
 void Game::loadWords(string path) {
 	ifstream wordStream; wordStream.open(path, ifstream::in);
 	string tmp;
 	while (wordStream >> tmp) availableWords.push_back(tmp);
 }
 
+/**
+ * @brief Feed the words to the screen. Main logic of the game, 
+ * based of the Producer-Consumer problem.
+ * 
+ * @param _game 
+ */
 void Game::_feed(Game* _game) {
 	std::uniform_int_distribution<int> dist(0, _game->availableWords.size() - 1);
 	std::uniform_real_distribution<float> saltDist(0.7f, 1.3f);
@@ -111,11 +143,19 @@ void Game::_feed(Game* _game) {
 	}
 }
 
+/**
+ * @brief Initializes all components of the Game.
+ * 
+ */
 void Game::init() {
 	loadOptions();
 	feeder = thread([&]() { Game::_feed(this); });
 }
 
+/**
+ * @brief Draws everything that will be looping and 
+ * possibly changing its state throughout the scene
+ */
 void Game::draw() {
 	decltype(words.size()) qnt;
 	{
@@ -163,10 +203,20 @@ void Game::draw() {
 	if (end) endGame();
 }
 
+/**
+ * @brief Sets the initial game speed 
+ * 
+ * @param _speed New speed to be set.
+ */
 void Game::setSpeed(unsigned int _speed) {
 	speed = _speed;
 }
 
+/**
+ * @brief Saves and changes scenes once the 
+ * game over condition is reached. 
+ * 
+ */
 void Game::endGame() {
 	shared_ptr<Scene> temp = make_shared<GameOver>(win, drawStack, drawStatic, *curScene, points);
 	saveScore();
