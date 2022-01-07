@@ -1,12 +1,11 @@
 # MatrixSmasher
-Trabalho final de Sistemas Operacionais I - SSC0140
 
 Após baixar arquivos pouco confiáveis na internet, o Anonymous infectou seu computador com um terrível malware.
 
 Para retardar o progesso do vírus, você precisa digitar as palavras que aparecem na sua tela o mais rápido possível,\
 enquanto ele aumenta progessivamente o velocidade de ataque. 
 
-*Feito utilizando [raylib](https://github.com/raysan5/raylib/) e c++*
+*Feito utilizando [raylib](https://github.com/raysan5/raylib/) e C++*
 
 ## Como jogar
 Ao iniciar o jogo, digite as palavras que aparecem na sua tela o mais rápido 
@@ -42,8 +41,9 @@ você perde 5% dos seus pontos.
 ## Compilação
 
 Caso a biblioteca `raylib` ainda não esteja configurada, primeiro configure
-seus objetos **estáticos** como indicado na [Wiki do projeto](https://github.com/raysan5/raylib/wiki#development-platforms) a partir da
-pasta `./MatrixSmasher/src/raylib/`, submódulo referenciando a versão utilizada no jogo.
+seus objetos **estáticos** como indicado na [Wiki do projeto](https://github.com/raysan5/raylib/wiki#development-platforms) com base na sua 
+plataforma a partir da cópia do `raylib` presente na pasta `./MatrixSmasher/src/raylib/`, 
+submódulo referenciando a versão utilizada no jogo.
 
 Com o raylib configurado em seu sistema, uma vez na pasta raíz do diretório
 clonado (`./MatrixSmasher/`), compile todos os arquivos fonte com o comando
@@ -57,8 +57,6 @@ e execute o executável com
 ``` sh
 make run
 ```
-
-.
 
 ## Layout dos Arquivos
 
