@@ -39,6 +39,27 @@ você perde 5% dos seus pontos.
 ## Vídeo 
 
 
+## Compilação
+
+Caso a biblioteca `raylib` ainda não esteja configurada, primeiro configure
+seus objetos **estáticos** como indicado na [Wiki do projeto](https://github.com/raysan5/raylib/wiki#development-platforms) a partir da
+pasta `./MatrixSmasher/src/raylib/`, submódulo referenciando a versão utilizada no jogo.
+
+Com o raylib configurado em seu sistema, uma vez na pasta raíz do diretório
+clonado (`./MatrixSmasher/`), compile todos os arquivos fonte com o comando
+
+``` sh
+make release # o compilador C++ pode ser configurado pela opção CXX, clang++ por padrão
+```
+
+e execute o executável com 
+
+``` sh
+make run
+```
+
+.
+
 ## Layout dos Arquivos
 
 ### **./data/**

@@ -2,14 +2,14 @@ OUT_F=../out
 EXEC=matrix.out
 CXX=clang++
 CXXFLAGS=-lraylib -ldl -lrt -lX11 -lGL -pthread -std=gnu++17 #-lpthread 
-RELEASE_FLAGS=-Wall -Wextra -Ofast -std=gnu++17 -march=native -DNDEBUG
+RELEASE_FLAGS=-Ofast -std=gnu++17 -march=native -DNDEBUG
 DEBUG_FLAGS=-Wall -Wextra -Wpedantic -Og -g3 -DDEBUG -std=gnu++17 -Weffc++ -march=native -mtune=native
 DEBUGGER=valgrind
 DEBUGGER_FLAGS=-s --leak-check=full --show-leak-kinds=all --track-origins=yes
 COMPONENTS=$(wildcard components/*.cpp) $(wildcard components/*/*.cpp)
 SCENES=$(wildcard scenes/*.cpp)
 ARQS=*.o
-COMPILATION=DEBUG
+COMPILATION=RELEASE
 
 ifneq ($(COMPILATION),DEBUG)
 	RUNFLAGS:=$(RELEASE_FLAGS)
