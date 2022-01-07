@@ -41,8 +41,11 @@ void Animation::startLoop(bool shouldLoop) {
     auto qnt = sprite.getAmntFrames();
     animHandler = thread([&, shouldLoop, qnt] () {
         while (true) {
+            {
+                unique_lock<mutex> ul(stopMutex);
+                conditialAnimation.wait_for(ul, std::chrono::milliseconds(frameRate));
+            }
             if (stopThread.load()) break;
-            std::this_thread::sleep_for(std::chrono::milliseconds(frameRate));
             if (++frameCounter >= qnt && !shouldLoop) {
                 frameCounter--;
                 break;
@@ -58,6 +61,7 @@ void Animation::startLoop(bool shouldLoop) {
  */
 void Animation::stopLoop() {
     stopThread.store(true);
+    conditialAnimation.notify_all();
     animHandler.join();
 }
 

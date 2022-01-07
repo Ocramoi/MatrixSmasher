@@ -42,3 +42,8 @@ debug:
 .PHONY: clean
 clean:
 	rm *.o $(OUT_F)/$(EXEC)
+
+release:
+	make -j components COMPILATION=RELEASE
+	make -j scenes COMPILATION=RELEASE
+	make -j COMPILATION=RELEASE

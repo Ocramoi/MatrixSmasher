@@ -12,6 +12,8 @@
 #include <functional>
 #include <thread>
 #include <atomic>
+#include <mutex>
+#include <condition_variable>
 
 #include "../raylib-cpp/include/raylib-cpp.hpp"
 #include "SpriteSheet.hpp"
@@ -21,6 +23,10 @@ using std::string;
 using std::optional;
 using std::function;
 using std::thread;
+using std::condition_variable;
+using std::unique_lock;
+using std::atomic_bool;
+using std::mutex;
 
 class Animation : public UIElement {
     private:
@@ -30,8 +36,10 @@ class Animation : public UIElement {
                      frameCounter{0};
         raylib::Rectangle frameRec{ 0.0f, 0.0f, 0.0f, 0.0f};
         raylib::Rectangle boundingBox{-1};
-        std::atomic_bool stopThread{false};
-        thread animHandler;   
+        atomic_bool stopThread{false};
+        thread animHandler;
+        mutex stopMutex;
+        condition_variable conditialAnimation;
     public:
         Animation(SpriteSheet _sprite, unsigned int _frameRate, raylib::Vector2 _pos);
         ~Animation();

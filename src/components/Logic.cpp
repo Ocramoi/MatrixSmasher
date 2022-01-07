@@ -17,7 +17,7 @@ void Logic::_addStack(vector<shared_ptr<UIElement>>& Q, const shared_ptr<UIEleme
     Q.push_back(el);
 }
 
-pair<string, unsigned short> Logic::clampTexst(
+pair<string, unsigned short> Logic::clampText(
     const string &str,
     int maxWidth,
     int fontSize) {

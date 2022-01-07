@@ -134,12 +134,14 @@ void Game::_feed(Game* _game) {
 
 		_game->speed *= 0.98;
 		auto timeout = max(_game->speed * saltDist(_game->rE), 300.f);
-		unique_lock<mutex> uFeed(_game->feedMutex);
 
-		_game->conditionalFeed.wait_for(
-			uFeed,
-			std::chrono::milliseconds(static_cast<int>(timeout))
-		);
+		{
+			unique_lock<mutex> uFeed(_game->feedMutex);
+			_game->conditionalFeed.wait_for(
+				uFeed,
+				std::chrono::milliseconds(static_cast<int>(timeout))
+			);
+		}
 	}
 }
 

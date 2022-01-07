@@ -106,7 +106,7 @@ void Slider::draw() {
      
     auto posY = pos.y + (height*fontSize) + (height - 1.f)*(fontSize*0.5f) + SLIDER_PADDING + SLIDER_BOX_PADDING,
         boxesTotal = maxValue*(SLIDER_BOX) + max((1.f*maxValue - 1)*SLIDER_BOX_PADDING, 0.f),
-        posX = pos.x + width/2.f - boxesTotal/2.f;
+        posX = pos.x + boundingBox.width/2 - boxesTotal/2.f;
 
     for (decltype(maxValue) i = 0; i < maxValue; i++) {
         if (i < curValue) DrawRectangle(posX, posY , SLIDER_BOX, SLIDER_BOX, RED);
