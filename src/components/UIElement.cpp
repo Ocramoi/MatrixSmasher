@@ -1,3 +1,7 @@
+/* 
+* Virtual class for any UIElement 
+*/
+
 #ifndef UIELEMENT_H_
 #define UIELEMENT_H_
 

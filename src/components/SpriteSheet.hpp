@@ -1,3 +1,9 @@
+/* 
+* SpriteSheet component that can be used
+* to load any spritesheet on any scenes in
+* the game.
+*/
+
 #ifndef SPRITESHEET_H_
 #define SPRITESHEET_H_
 

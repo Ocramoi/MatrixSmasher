@@ -1,3 +1,9 @@
+/* 
+* Word component used int the main `Game`   
+* scene; Represents a word falling from 
+* screen; 
+*/
+
 #ifndef WORD_H_
 #define WORD_H_
 

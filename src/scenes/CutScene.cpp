@@ -42,7 +42,7 @@ void CutScene::appendSprite(
 
 void CutScene::setFrameRate(unsigned int _frameRate) {
     frameRate = _frameRate;
-    for (auto e : sprites) e.first->setFrameSpeed(frameRate);
+    for (auto e : sprites) e.first->setframeRate(frameRate);
 }
 
 void CutScene::init() {

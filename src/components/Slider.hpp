@@ -1,3 +1,9 @@
+/* 
+* Slider component that can be used
+* to create a slider on any scenes in
+* the game.
+*/
+
 #ifndef SLIDER_H_
 #define SLIDER_H_
 

@@ -1,3 +1,9 @@
+/* 
+* Animation component that can be used 
+* for running animations on any scenes 
+* in the game. 
+*/
+
 #ifndef ANIMATION_H_
 #define ANIMATION_H_
 
@@ -20,14 +26,14 @@ class Animation : public UIElement {
     private:
         SpriteSheet sprite;
         raylib::Vector2 pos{-1, -1};
-        unsigned int frameSpeed{1}, 
+        unsigned int frameRate{1}, 
                      frameCounter{0};
         raylib::Rectangle frameRec{ 0.0f, 0.0f, 0.0f, 0.0f};
         raylib::Rectangle boundingBox{-1};
         std::atomic_bool stopThread{false};
         thread animHandler;   
     public:
-        Animation(SpriteSheet _sprite, unsigned int _frameSpeed, raylib::Vector2 _pos);
+        Animation(SpriteSheet _sprite, unsigned int _frameRate, raylib::Vector2 _pos);
         ~Animation();
         void startLoop();
         void startLoop(bool shouldLoop);
@@ -38,7 +44,7 @@ class Animation : public UIElement {
         void setPosition(raylib::Vector2 v);
         string getText();
         void setText(const string& newText);
-        void setFrameSpeed(unsigned int _frameSpeed);
+        void setframeRate(unsigned int _frameRate);
         optional<bool> checkCollision(const raylib::Vector2 &point);
         void click();
         void interact();

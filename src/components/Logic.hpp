@@ -1,3 +1,9 @@
+/* 
+* Contains functions that can be used by
+* multiple components in the game, in order
+* to modify them.
+*/
+
 #ifndef LOGIC_H_
 #define LOGIC_H_
 

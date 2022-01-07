@@ -1,3 +1,9 @@
+/* 
+* Button component that can be used
+* to create a button on any scenes in
+* the game.
+*/
+
 #ifndef BUTTON_H_
 #define BUTTON_H_
 
