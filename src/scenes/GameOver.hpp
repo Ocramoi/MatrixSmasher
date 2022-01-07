@@ -24,7 +24,7 @@ class GameOver : public Scene {
         bool changeState{false};
         unsigned int fontSize{20},
             score{0};
-        int textPadding{10};
+        int textPadding{5};
         void _toggleScene(GameOver* _c);
         vector<pair<string, unsigned int>> texts{
                 {"GAME OVER!", 40},

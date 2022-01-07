@@ -18,14 +18,13 @@
 using namespace std;
 
 // TODO scoreboard
-// TODO options
 // TODO dvd boss
 
 bool handleUI(shared_ptr<UIElement> el, raylib::Mouse& mouseInput) {
     if (el == nullptr) return true;
     el->draw();
     bool r{false};
-    if (mouseInput.IsButtonDown(MOUSE_LEFT_BUTTON)) {
+    if (mouseInput.IsButtonPressed(MOUSE_LEFT_BUTTON)) {
         auto c = el->checkCollision(mouseInput.GetTouchPosition(0));
         if (c.has_value() && c.value()) {
             el->interact();

@@ -25,15 +25,15 @@ class Slider : public UIElement {
             fontSize{20};
         raylib::Rectangle boundingBox{-1};
         raylib::Color border{raylib::Color::Black()},
-            background{raylib::Color::White()},
+            baseColor{raylib::Color::White()},
+            background{baseColor},
             onFocusColor{raylib::Color::LightGray()},
             fontColor{raylib::Color::Black()};
         bool state{false};
-        function<void(void)> onClick;
+        function<void(void)> onClick{[]() {}};
         unsigned int maxValue{0},
             curValue{0};
     public:
-        Slider() {}
         Slider(const string& _text, unsigned int _maxValue, raylib::Vector2 _pos);
         Slider(const string& _text, unsigned int _maxValue, raylib::Vector2 _pos, unsigned int _width);
         string getText();
@@ -55,6 +55,9 @@ class Slider : public UIElement {
         void draw();
         void increase();
         void decrease();
+        bool getState();
+        unsigned int getValue();
+        void setValue(unsigned int val);
 };
 
 #endif // SLIDER_H_

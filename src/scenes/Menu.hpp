@@ -6,6 +6,7 @@
 #include "./Credits.hpp"
 #include "./Options.hpp"
 #include "./CutScene.hpp"
+#include "./Scoreboard.hpp"
 
 #include <vector>
 #include <memory>

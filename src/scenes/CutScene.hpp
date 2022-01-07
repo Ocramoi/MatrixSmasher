@@ -29,7 +29,6 @@ class CutScene : public Scene {
         unsigned int frameRate{1},
             maxFrames{0};
         shared_ptr<Scene> nextScene{nullptr};
-        bool changeState{false};
         thread changeScene;
         void setThread();
     public:

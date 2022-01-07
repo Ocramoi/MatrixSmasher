@@ -24,6 +24,7 @@ class Word {
 	public:
 		Word(const string &_word, const raylib::Window& win);
 		void setSpeed(float _speed);
+		float getSpeed();
 		void fall();
 		void fall(float step);
 		raylib::Vector2 getPos();

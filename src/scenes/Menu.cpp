@@ -27,7 +27,7 @@ void _configButtons(shared_ptr<Button>& button, UI... buttons) {
 }
 
 void Menu::init() {
-    constexpr int maxButtonWidth{100},
+    constexpr int maxButtonWidth{150},
         padding{10},
         titlePadding{5*padding};
     raylib::Vector2 winSize{win->GetSize()},
@@ -40,11 +40,12 @@ void Menu::init() {
 
     titlePos = raylib::Vector2{1.f*win->GetWidth()/2 - 1.f*raylib::MeasureText(title, titleSize)/2, titlePadding };
 
-    auto start = make_shared<Button>("Start", butMidPoint, maxButtonWidth),
-        options = make_shared<Button>("Options", butMidPoint, maxButtonWidth),
-        credits = make_shared<Button>("Credits", butMidPoint, maxButtonWidth),
-        exit = make_shared<Button>("Exit", butMidPoint, maxButtonWidth);
-    _configButtons(start, options, credits, exit);
+    auto start{make_shared<Button>("Start", butMidPoint, maxButtonWidth)},
+        scoreboard{make_shared<Button>("Scoreboard", butMidPoint, maxButtonWidth)},
+        options{make_shared<Button>("Options", butMidPoint, maxButtonWidth)},
+        credits{make_shared<Button>("Credits", butMidPoint, maxButtonWidth)},
+        exit{make_shared<Button>("Exit", butMidPoint, maxButtonWidth)};
+    _configButtons(start, scoreboard, options, credits, exit);
 
     start->setClick([&, winSize, midSize] () {
         drawStatic->clear();
@@ -88,6 +89,13 @@ void Menu::init() {
         (*curScene)->init();
     });
 
+    scoreboard->setClick([&] () {
+        drawStatic->clear();
+        shared_ptr<Scene> temp{make_shared<Scoreboard>(win, drawStack, drawStatic, *curScene)};
+        temp.swap(*curScene);
+        (*curScene)->init();
+    });
+
     credits->setClick([&] () {
         drawStatic->clear();
         shared_ptr<Scene> temp = make_shared<Credits>(win, drawStack, drawStatic, *curScene);
@@ -99,7 +107,7 @@ void Menu::init() {
         *curScene = nullptr;
     });
 
-    for (auto &el : Logic::setPosStack(padding, VERTICAL, start, options, credits, exit))
+    for (auto &el : Logic::setPosStack(padding, VERTICAL, start, scoreboard, options, credits, exit))
         drawStatic->push_back(el);
 }
 

@@ -22,6 +22,10 @@ void Word::setSpeed(float _speed) {
 	speed = _speed;
 }
 
+float Word::getSpeed() {
+	return speed;
+}
+
 void Word::fall() {
 	pos.y += speed;
 }

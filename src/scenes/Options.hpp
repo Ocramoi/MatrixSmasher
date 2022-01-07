@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <memory>
+#include <fstream>
 
 #include "../components/UIElement.cpp"
 #include "../components/Slider.hpp"
@@ -27,6 +28,9 @@ class Options : public Scene {
         void _toggleScene(Options* _c);
         thread keyboardCapture;
         shared_ptr<Slider> speed;
+        vector<shared_ptr<UIElement>> uiEls;
+        void saveOptions(string path = "../data/options.txt");
+        void loadOptions(string path = "../data/options.txt");
     public:
         mutex drawMutex;
         Options(

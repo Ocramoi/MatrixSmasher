@@ -23,7 +23,9 @@ GameOver::GameOver(
     texts.back().first += std::to_string(score);
 }
 
-GameOver::~GameOver() {}
+GameOver::~GameOver() {
+    drawStack->clear();
+}
 
 void GameOver::setFinalScore(unsigned int _score) {
     score = _score;
@@ -38,7 +40,7 @@ void GameOver::setUI() {
     txtPos.clear();
     txtPos.reserve(texts.size());
 
-    auto totalHeight{texts.size() + butCredits->getHeight()};
+    auto totalHeight{texts.size()*textPadding + butCredits->getHeight()};
     for_each(
         texts.begin(),
         texts.end(),
@@ -61,10 +63,10 @@ void GameOver::setUI() {
 }
 
 void GameOver::init() {
-    butCredits = make_shared<Button>("End Credits", raylib::Vector2{0, 0});
+    butCredits = make_shared<Button>("Scoreboard", raylib::Vector2{0, 0});
     butCredits->setClick([&] () {
         drawStatic->clear();
-        shared_ptr<Scene> temp = make_shared<Credits>(win, drawStack, drawStatic, *curScene);
+        shared_ptr<Scene> temp = make_shared<Scoreboard>(win, drawStack, drawStatic, *curScene);
         temp.swap(*curScene);
         (*curScene)->init();
     });

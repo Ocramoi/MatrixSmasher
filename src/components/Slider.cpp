@@ -5,7 +5,7 @@ using std::move;
 
 constexpr float SLIDER_PADDING{5};
 constexpr float SLIDER_BOX{10};
-constexpr float SLIDER_BOX_PADDING{1};
+constexpr float SLIDER_BOX_PADDING{2};
 
 
 Slider::Slider(const string& _text, unsigned int _maxValue, raylib::Vector2 _pos) {
@@ -42,8 +42,8 @@ void Slider::setText(const string& newText) {
     formatedText = text_lines.first;
     height = text_lines.second;
 
-    auto totalWidth = width + (maxValue-1.f)*(SLIDER_BOX + SLIDER_BOX_PADDING) +  2.f*SLIDER_PADDING;
-    auto totalHeight = height*fontSize + (height - 1.f)*(fontSize*0.5f) + 2.f*SLIDER_PADDING + SLIDER_BOX + 1.f;
+    auto totalWidth = width + (maxValue-1.f)*(SLIDER_BOX + SLIDER_BOX_PADDING) +  2.f*SLIDER_PADDING,
+        totalHeight = height*fontSize + (height - 1.f)*(fontSize*0.5f) + 2.f*SLIDER_PADDING + SLIDER_BOX + 2.f*SLIDER_BOX_PADDING;
     boundingBox = raylib::Rectangle(
         {max(0.f, pos.x), max(0.f, pos.y)},
         {totalWidth, totalHeight}
@@ -58,16 +58,17 @@ void Slider::draw() {
     boundingBox.Draw(background); 
     boundingBox.DrawLines(border, 2);
     
-    raylib::DrawText(formatedText, pos.x+SLIDER_PADDING, pos.y+SLIDER_PADDING, fontSize, fontColor);
+    raylib::DrawText(formatedText, pos.x + SLIDER_PADDING, pos.y + SLIDER_PADDING, fontSize, fontColor);
      
-    auto posY = pos.y + (height - 1.f)*(fontSize*0.5f) + SLIDER_PADDING + 1,
-        posX = pos.x + SLIDER_PADDING;
-    for (int i = 0; i < maxValue; i++) {
-        if (i < curValue) DrawRectangle(posX, posY , SLIDER_BOX, SLIDER_BOX, raylib::Color::Red());
-            DrawRectangleLines(posX, posY, SLIDER_BOX, SLIDER_BOX, raylib::Color::Maroon());
-        posX += SLIDER_BOX_PADDING + posX;
-    }
+    auto posY = pos.y + (height*fontSize) + (height - 1.f)*(fontSize*0.5f) + SLIDER_PADDING + SLIDER_BOX_PADDING,
+        boxesTotal = maxValue*(SLIDER_BOX) + max((1.f*maxValue - 1)*SLIDER_BOX_PADDING, 0.f),
+        posX = pos.x + width/2.f - boxesTotal/2.f;
 
+    for (decltype(maxValue) i = 0; i < maxValue; i++) {
+        if (i < curValue) DrawRectangle(posX, posY , SLIDER_BOX, SLIDER_BOX, RED);
+        DrawRectangleLines(posX, posY, SLIDER_BOX, SLIDER_BOX, MAROON);
+        posX += SLIDER_BOX + SLIDER_BOX_PADDING;
+    }
 }
 
 optional<bool> Slider::checkCollision(const raylib::Vector2 &point) {
@@ -85,18 +86,19 @@ unsigned int Slider::getWidth() {
 
 void Slider::click() {
     state = !state;
-    setBackground(onFocusColor);
+    if (state) setBackground(onFocusColor);
+    else setBackground(baseColor);
 }
 
 void Slider::interact() {
-    onClick();
     click();
+    onClick();
 }
 
 void Slider::setColors(raylib::Color _border, raylib::Color _background, raylib::Color _fontColor) {
     border = _border;
     background = _background;
-    fontColor = _border;
+    fontColor = _fontColor;
 }
 
 void Slider::setFontColor(raylib::Color _fontColor) {
@@ -117,4 +119,16 @@ void Slider::increase() {
 
 void Slider::decrease() {
     if (curValue > 0) curValue--;
+}
+
+bool Slider::getState() {
+    return state;
+}
+
+void Slider::setValue(unsigned int val) {
+    curValue = std::min(maxValue, val);
+}
+
+unsigned int Slider::getValue() {
+    return curValue;
 }

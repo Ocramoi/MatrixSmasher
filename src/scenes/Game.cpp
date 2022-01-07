@@ -1,8 +1,71 @@
 #include "./Game.hpp"
 #include "./Credits.hpp"
 
+#include "../include/json.hpp"
+
 using std::max;
 using std::random_device;
+using std::ifstream;
+using std::ofstream;
+
+void Game::loadOptions(string path) {
+    ifstream loaded; loaded.open(path);
+    nlohmann::json obj;
+    if (loaded.good()) {
+        string raw;
+        try {
+            loaded >> raw;
+            obj = nlohmann::json::parse(raw);
+        } catch (...) {
+            std::cerr << "Error while processing file" << std::endl;
+        }
+    } else {
+        loaded.close();
+        std::cerr << "File " << path << " could not be opened" << std::endl;
+        return;
+    }
+
+    string conf{"difficulty"};
+    if (obj.find(conf) != obj.end())
+		diff = obj.at(conf).get<unsigned int>();
+
+	wordSpeed *= 1 + 0.1f*diff;
+
+    loaded.close();
+}
+
+void Game::saveScore(string path) {
+	vector<pair<score_t, difficulty_t>> scores{{ points, diff }};
+
+	ifstream sRaw; sRaw.open(path, std::ios::in | std::ios::binary);
+	if (sRaw.good()) {
+		sRaw.seekg(0, std::ios::end);
+		auto nScores{sRaw.tellg()/(sizeof(score_t) + sizeof(difficulty_t))};
+		sRaw.seekg(0, std::ios::beg);
+		scores.reserve(nScores + 1);
+		for (decltype(nScores) i{0}; i < nScores; ++i) {
+			score_t curS; sRaw.read(reinterpret_cast<char*>(&curS), sizeof(score_t));
+			difficulty_t curD; sRaw.read(reinterpret_cast<char*>(&curD), sizeof(difficulty_t));
+			scores.push_back({ curS, curD });
+		}
+		std::cout << "Info file read" << std::endl;
+	} else
+		std::cerr << "IN: Error while opening info file" << std::endl;
+	sRaw.close();
+
+	std::sort(scores.begin(), scores.end());
+	ofstream oScores; oScores.open(path, std::ios::trunc | std::ios::binary);
+	if (oScores.good()) {
+		auto it{scores.rbegin()};
+		for (unsigned int i{0}; i < SCOREBOARD_SIZE && it != scores.rend(); ++it, ++i) {
+			oScores.write(reinterpret_cast<char*>(&it->first), sizeof(it->first));
+			oScores.write(reinterpret_cast<char*>(&it->second), sizeof(it->second));
+		}
+		std::cout << "Info file written" << std::endl;
+	} else
+		std::cerr << "OUT: Error while opening info file" << std::endl;
+	oScores.close();
+}
 
 Game::Game(
 	shared_ptr<raylib::Window>& _win,
@@ -49,6 +112,7 @@ void Game::_feed(Game* _game) {
 }
 
 void Game::init() {
+	loadOptions();
 	feeder = thread([&]() { Game::_feed(this); });
 }
 
@@ -94,7 +158,7 @@ void Game::draw() {
 		}
 	}
 
-	if (keyPress && !anyHits) points *= 0.9;
+	if (keyPress && !anyHits) points *= 0.95;
 
 	if (end) endGame();
 }
@@ -104,11 +168,12 @@ void Game::setSpeed(unsigned int _speed) {
 }
 
 void Game::endGame() {
+	shared_ptr<Scene> temp = make_shared<GameOver>(win, drawStack, drawStatic, *curScene, points);
+	saveScore();
 	drawStatic->clear();
 	stopFeed.store(true);
 	conditionalFeed.notify_all();
 	feeder.join();
-	shared_ptr<Scene> temp = make_shared<GameOver>(win, drawStack, drawStatic, *curScene, points);
 	temp->init();
 	temp.swap(*curScene);
 }

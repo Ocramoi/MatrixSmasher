@@ -1,9 +1,48 @@
 #include "./Options.hpp"
 #include "./Menu.hpp"
 
+#include "../include/json.hpp"
+
 using std::make_pair;
 using std::make_shared;
 using std::max;
+using std::ofstream;
+using std::ifstream;
+
+void Options::saveOptions(string path) {
+    nlohmann::json options;
+    options["difficulty"] = speed->getValue();
+
+    ofstream save; save.open(path, std::ios::trunc);
+    save << options.dump();
+    save.close();
+
+    std::cout << "Options saved to " << path << std::endl;
+}
+
+void Options::loadOptions(string path) {
+    ifstream loaded; loaded.open(path);
+    nlohmann::json obj;
+    if (loaded.good()) {
+        string raw;
+        try {
+            loaded >> raw;
+            obj = nlohmann::json::parse(raw);
+        } catch (...) {
+            std::cerr << "Error while processing file" << std::endl;
+        }
+    } else {
+        loaded.close();
+        std::cerr << "File " << path << " could not be opened" << std::endl;
+        return;
+    }
+
+    string conf{"difficulty"};
+    if (obj.find(conf) != obj.end())
+        speed->setValue(obj.at(conf).get<unsigned int>());
+
+    loaded.close();
+}
 
 Options::Options(
     shared_ptr<raylib::Window>& _win,
@@ -32,29 +71,25 @@ void Options::init() {
     auto bgScale = max(1.f*win->GetWidth()/bg.getFrameWidth(), 1.f*win->GetHeight()/bg.getFrameHeight());
     bg.scale(bgScale);
     sprite = { make_shared<Animation>(bg, 12U, raylib::Vector2{0, 0}), false };
+    sprite.first->startLoop(sprite.second);
 
     raylib::Vector2 winSize = win->GetSize(),
         midSize = winSize.Divide(2.f);
 
-    speed = make_shared<Slider>("Difficulty", 3U, midSize, maxButtonWidth);
+    speed = make_shared<Slider>(
+        "Difficulty", 3U,
+        midSize,
+        maxButtonWidth
+    );
     speed->setBorder(raylib::Color::DarkGreen());
     speed->setFontColor(raylib::Color::DarkGreen());
-    speed->setClick([&] () {
-        keyboardCapture = thread(
-            [&]() {
-                while (true){
-                    auto key = GetKeyPressed();
-                    if (!key) continue;
-                    if (key == KEY_RIGHT) speed->increase();
-                    else if (key == KEY_LEFT) speed->decrease();
-                    std::this_thread::sleep_for(std::chrono::milliseconds(50));
-                }
-            }
-        );
-        keyboardCapture.detach();
+
+    shared_ptr<Button> saveBut{make_shared<Button>("Save", midSize)};
+    saveBut->setClick([&]() {
+        saveOptions();
     });
 
-    sprite.first->startLoop(sprite.second);
+    uiEls = Logic::setPosStack(10, VERTICAL, speed, saveBut);
 
     auto back = make_shared<Button>("Back", raylib::Vector2 {10, 10});
     back->setBorder(raylib::Color::DarkGreen());
@@ -68,9 +103,29 @@ void Options::init() {
 
     drawStatic->push_back(sprite.first);
     drawStatic->push_back(back);
+
+    for (auto i{uiEls.begin() + 1}; i != uiEls.end(); ++i)
+        drawStatic->push_back(*i);
+
+    loadOptions();
 };
 
 void Options::draw() {
+    auto key{GetKeyPressed()};
+    if (speed->getState() && key) {
+        switch (key) {
+            case KEY_RIGHT:
+                speed->increase();
+                break;
+            case KEY_LEFT:
+                speed->decrease();
+                break;
+            case KEY_ENTER:
+                speed->interact();
+            default:
+                break;
+        }
+    }
     drawStack->push_back(speed);
 }
 
