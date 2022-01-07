@@ -1,14 +1,43 @@
 # MatrixSmasher
 Trabalho final de Sistemas Operacionais I - SSC0140
 
-*Realizado utilizando [raylib](https://github.com/raysan5/raylib/) e c++*
+Após baixar arquivos pouco confiáveis na internet, o Anonymous infectou seu computador com um terrível malware.
 
-## Contributors | Participantes
-<a href="https://github.com/Ocramoi"><img src="https://avatars.githubusercontent.com/u/9422402?v=4" title="Ocramoi" width="80" height="80"></a>
-<a href="https://github.com/milenacsilva"><img src="https://avatars2.githubusercontent.com/u/61664263?s=460&v=4" title="milenacsilva" width="80" height="80"></a>
+Para retardar o progesso do vírus, você precisa digitar as palavras que aparecem na sua tela o mais rápido possível,\
+enquanto ele aumenta progessivamente o velocidade de ataque. 
 
-Marco Antônio Ribeiro de Toledo  - **11796419**\
-Milena Corrêa da Silva - **11795401**
+*Feito utilizando [raylib](https://github.com/raysan5/raylib/) e c++*
+
+## Como jogar
+Ao iniciar o jogo, digite as palavras que aparecem na sua tela o mais rápido 
+possível sem deixar nenhuma passar.
+
+* Você tem 10 vidas no total, ou seja, pode perder de vista 10 palavras.
+
+* Cada palavra completamente correta equivale a 100 pontos.
+
+* Conforme o jogo vai progredindo, mais palavras vão aparecendo na tela 
+simultaneamente.
+
+* A cada tecla errada (que não pode consumir nenhuma palavra na tela) 
+você perde 5% dos seus pontos.
+
+* Ao final do jogo seu score final ficará salvo no scoreboard :)
+
+## Screenshots
+
+<p float="left" align="center">
+  <img src="./screenshots/menu.jpg" width="300" />
+  <img src="./screenshots/scoreboard.jpg" width="300" />
+  <img src="./screenshots/credits.jpg" width="300" />
+</p>
+<p float="left" align="center">
+  <img src="./screenshots/options.jpg" width="300" /> 
+  <img src="./screenshots/gameover.jpg" width="300" /> 
+</p>
+
+## Vídeo 
+
 
 ## Layout dos Arquivos
 
@@ -169,16 +198,9 @@ void Animation::stopLoop() {
 }
 ```
 
-## Screenshots
+## Contributors | Participantes
+<a href="https://github.com/Ocramoi"><img src="https://avatars.githubusercontent.com/u/9422402?v=4" title="Ocramoi" width="80" height="80"></a>
+<a href="https://github.com/milenacsilva"><img src="https://avatars2.githubusercontent.com/u/61664263?s=460&v=4" title="milenacsilva" width="80" height="80"></a>
 
-<p float="left" align="center">
-  <img src="./screenshots/menu.jpg" width="500" />
-  <img src="./screenshots/scoreboard.jpg" width="500" />
-  <img src="./screenshots/credits.jpg" width="500" />
-</p>
-<p float="left" align="center">
-  <img src="./screenshots/options.jpg" width="500" /> 
-  <img src="./screenshots/gameover.jpg" width="500" /> 
-</p>
-
-## Vídeo 
+Marco Antônio Ribeiro de Toledo  - **11796419**\
+Milena Corrêa da Silva - **11795401**
