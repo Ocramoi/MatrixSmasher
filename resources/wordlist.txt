@@ -39,7 +39,7 @@ url
 format
 cryptography
 open-source
-in,
+in
 heapsort
 cleanroom
 node
@@ -74,7 +74,7 @@ values
 technical
 artifact
 phase
-best,
+best
 console
 efficiency
 class-based
