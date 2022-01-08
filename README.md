@@ -36,7 +36,7 @@ você perde 5% dos seus pontos.
 </p>
 
 ## Vídeo 
-
+[![Video](https://i.imgur.com/0HEDzN2.png)](https://www.youtube.com/watch?v=h2jHjkOCbkE)
 
 ## Compilação
 
