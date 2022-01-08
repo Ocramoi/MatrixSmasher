@@ -108,3 +108,7 @@ void SpriteSheet::scale(float newScale) {
     ));
     texture = scaled->LoadTexture();
 }
+
+SpriteSheet::~SpriteSheet() {
+    // UnloadTexture(texture);
+}

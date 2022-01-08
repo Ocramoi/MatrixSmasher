@@ -22,9 +22,10 @@ class SpriteSheet {
         Alignment align;
 
     public:
-        SpriteSheet() {}
+        SpriteSheet() {};
         SpriteSheet(const raylib::Image& _sheet, unsigned int _amntFrames, Alignment _align);
         SpriteSheet(const raylib::Image& _sheet, unsigned int _amntFrames, float _scale, Alignment _align);
+        ~SpriteSheet();
         raylib::Image getSheet();
         Texture2D& getTexture();
         void setSheet(const raylib::Image& _sheet);
