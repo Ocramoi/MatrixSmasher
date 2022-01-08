@@ -45,8 +45,8 @@ seus objetos **estáticos** como indicado na [Wiki do projeto](https://github.co
 plataforma a partir da cópia do `raylib` presente na pasta `./MatrixSmasher/src/raylib/`, 
 submódulo referenciando a versão utilizada no jogo.
 
-Com o raylib configurado em seu sistema, uma vez na pasta raíz do diretório
-clonado (`./MatrixSmasher/`), compile todos os arquivos fonte com o comando
+Com o raylib configurado em seu sistema, uma vez na pasta `src` do diretório
+clonado (`./MatrixSmasher/src`), compile todos os arquivos fonte com o comando
 
 ``` sh
 make release # o compilador C++ pode ser configurado pela opção CXX, clang++ por padrão
