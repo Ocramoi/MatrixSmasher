@@ -93,6 +93,8 @@ void GameOver::setUI() {
  */
 void GameOver::init() {
     butCredits = make_shared<Button>("Scoreboard", raylib::Vector2{0, 0});
+    butCredits->setBorder(raylib::Color::DarkGreen());
+    butCredits->setFontColor(raylib::Color::DarkGreen());
     butCredits->setClick([&] () {
         drawStatic->clear();
         shared_ptr<Scene> temp = make_shared<Scoreboard>(win, drawStack, drawStatic, *curScene);

@@ -103,10 +103,15 @@ int main() {
     w->SetIcon(icon);
     w->SetTargetFPS(60);
 
+    // raylib::AudioDevice audio{};
+    // raylib::Music st{"../resources/sound/song.mp3"};
+    // st.SetLooping(true); st.Play(); st.SetVolume(50);
+
     shared_ptr<Scene> startScene; startScene = make_shared<Menu>(w, drawStack, drawStatic, startScene);
     startScene->init();
     
     while (gameLoop(w, startScene, drawStack, drawStatic));
+    // st.Stop();
     
     return 0;
 }

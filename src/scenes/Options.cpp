@@ -121,6 +121,8 @@ void Options::init() {
     saveBut->setClick([&]() {
         saveOptions();
     });
+    saveBut->setBorder(raylib::Color::DarkGreen());
+    saveBut->setFontColor(raylib::Color::DarkGreen());
 
     uiEls = Logic::setPosStack(10, VERTICAL, speed, saveBut);
 
